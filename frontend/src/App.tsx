@@ -1,11 +1,15 @@
-import {Route} from "react-router-dom";
 import './App.css';
-import Container from "./routingContainers/Container";
+import Navbar from "./routingContainers/Navbar/Navbar";
+import React from "react";
 
-const App: React.FC = () => {
-  return (
-    <Container />
-  );
+interface props {
+
+}
+
+const App: React.FC<props> = () => {
+    return (
+        <Navbar/>
+    );
 }
 
 export default App;
