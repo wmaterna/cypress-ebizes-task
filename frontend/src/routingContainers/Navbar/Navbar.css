@@ -1,0 +1,33 @@
+.nav__container {
+    background-color: beige;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid #bbbbbb;
+}
+
+.nav__element {
+    padding: 14px 16px;
+    align-items: flex-start;
+    text-decoration: none;
+    list-style-type: none;
+}
+
+.nav__element:hover:not(.nav__container-logo) {
+    background-color: antiquewhite;
+}
+
+.nav__element a {
+    color: #252525;
+    text-decoration: none;
+}
+
+.nav__container-logo {
+    font-weight: 700;
+    color: #346007;
+    flex: 1;
+    order: 0;
+}

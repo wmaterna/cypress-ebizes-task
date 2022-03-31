@@ -1,0 +1,19 @@
+.dashboard {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    background-color: #f1f1f1;
+}
+
+.dashboard__navbar {
+    width: 20%;
+    background-color: cadetblue;
+}
+
+.dashboard__main-content {
+    width: 100%;
+}
+
+.dashboard__main-content {
+    padding: 10px;
+}
