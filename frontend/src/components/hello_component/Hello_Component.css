@@ -7,11 +7,6 @@
     position: relative;
 }
 
-span {
-    color: #e14e4e;
-    font-size: 4rem;
-}
-
 .title {
     position: absolute;
     max-width: 800px;
