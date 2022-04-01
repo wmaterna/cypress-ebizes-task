@@ -15,7 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from vetclinic import views
 
 urlpatterns = [
+    path('', views.frontpage_view),
     path('admin/', admin.site.urls),
+    path('login/', views.login_view),
+    path('login/members/', views.loggedin_view),
+    path('logout/', views.logout_view),
 ]
