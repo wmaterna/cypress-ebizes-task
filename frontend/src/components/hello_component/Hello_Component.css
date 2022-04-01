@@ -29,8 +29,7 @@ span {
     font-size: 2rem;
 }
 
-img {
-
+.landing-page img {
     width: 80%;
     max-width: 100%;
     vertical-align: middle;
