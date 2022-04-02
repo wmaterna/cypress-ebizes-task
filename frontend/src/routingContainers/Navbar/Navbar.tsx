@@ -14,10 +14,10 @@ const Navbar: React.FC<props> = () => {
                     <Link className="nav__container-logo" to="/"> Clinic Vet </Link>
                 </li>
                 <li className="nav__element">
-                    <Link to="/signin"> Sign In </Link>
+                    <Link to="/signIn"> Sign In </Link>
                 </li>
                 <li className="nav__element">
-                    <Link to="/register"> Register </Link>
+                    <Link to="/signUp"> Register </Link>
                 </li>
             </ul>
         </nav>

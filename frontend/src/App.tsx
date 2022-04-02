@@ -3,8 +3,8 @@ import Navbar from "./routingContainers/Navbar/Navbar";
 import Dashboard from "./components/dashboard/Dashboard";
 import React from "react";
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
-import Register from "./screens/Register";
-import SignIn from "./screens/SignIn";
+import SignUp from "./components/SignUp/SignUp";
+import SignIn from "./components/SignIn/SignIn";
 import HelloComponent from "./components/hello_component/Hello_Component";
 
 
@@ -20,8 +20,8 @@ const App: React.FC<props> = () => {
                 <Routes>
                     <Route path="/" element={<HelloComponent/>}/>
                     <Route path="/dashboard" element={<Dashboard/>}/>
-                    <Route path="/register" element={<Register/>}/>
-                    <Route path="/signin" element={<SignIn/>}/>
+                    <Route path="/signUp" element={<SignUp/>}/>
+                    <Route path="/signIn" element={<SignIn/>}/>
                 </Routes>
             </Router>
         </div>
