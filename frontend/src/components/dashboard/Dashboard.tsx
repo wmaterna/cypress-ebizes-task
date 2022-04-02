@@ -17,7 +17,7 @@ const Dashboard: React.FC<props> = () => {
                 <Routes>
                     {/*<Routes>*/}
                     {/*<Route path="/opcja1" element={<Hello_Component/>}/>*/}
-                    {/*<Route path="/opcja2" element={<Register/>}/>*/}
+                    {/*<Route path="/opcja2" element={<SignUp/>}/>*/}
                 </Routes>
             </div>
         </div>

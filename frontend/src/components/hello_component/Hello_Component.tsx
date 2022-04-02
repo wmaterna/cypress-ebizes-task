@@ -10,7 +10,7 @@ const HelloComponent: React.FC<props> = () => {
         <div className="landing-page">
             <div className="title">
                 <h3>
-                    Witamy w <span>Clinic-Vet</span>
+                    Witamy w <span className="clinic-name">Clinic-Vet</span>
                 </h3>
                 <p>
                     tu zaopiekujemy się twoim zwierzakiem
