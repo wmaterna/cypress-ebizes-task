@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useEffect, useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -9,7 +10,9 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import {useEffect, useState} from "react";
+import axios from "axios";
+import {HOST} from "../../constant/constant";
+import {useNavigate} from "react-router";
 
 interface SignInAccount {
     email: string;
@@ -31,6 +34,7 @@ function Copyright(props: any) {
 
 
 export default function SignIn() {
+    const navigate = useNavigate();
     let signInAccount: SignInAccount = {
         email: '',
         password: '',
@@ -38,6 +42,7 @@ export default function SignIn() {
 
     const [formValues, setFormValues] = useState(signInAccount);
     const [isSubmit, setIsSubmit] = useState(false);
+    const [error, setError] = useState(false);
 
     const handleChange = (event: any) => {
         const {name, value} = event.target;
@@ -53,13 +58,26 @@ export default function SignIn() {
         if (isSubmit) {
             console.log("Valid Form ", formValues);
 
-            // fetch(`${HOST}/account`, {
-            //     method: 'POST',
-            //     headers: {"Content-Type": "aplication/json"},
-            //     body: createNewAccount
-            // })
+            loginUser(formValues).then((res) => {
+                    console.log(res.data)
+                    console.log(res)
+
+                    if (res.data.status) {
+                        navigate("/dashboard");
+                    } else {
+                        setError(true);
+                    }
+                },
+                () => {
+                    console.log('error')
+                    setError(true);
+                });
         }
-    }, [isSubmit, formValues]);
+    }, [isSubmit, formValues, navigate]);
+
+    async function loginUser(credentials: SignInAccount) {
+        return axios.post(`${HOST}/login`, credentials);
+    }
 
     return (
         <Container component="main" maxWidth="xs">
@@ -76,7 +94,7 @@ export default function SignIn() {
                     <LockOutlinedIcon/>
                 </Avatar>
                 <Typography component="h1" variant="h5">
-                    Sign in
+                    Zaloguj się
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} sx={{mt: 1}}>
                     <TextField
@@ -89,6 +107,8 @@ export default function SignIn() {
                         autoComplete="email"
                         value={formValues.email}
                         onChange={handleChange}
+                        error={error}
+                        helperText={error ? "Nieprawidłowe dane logowania" : ""}
                         autoFocus
                     />
                     <TextField
@@ -102,6 +122,8 @@ export default function SignIn() {
                         value={formValues.password}
                         onChange={handleChange}
                         autoComplete="current-password"
+                        error={error}
+                        helperText={error ? "Nieprawidłowe dane logowania" : ""}
                     />
                     <Button
                         type="submit"
@@ -111,6 +133,7 @@ export default function SignIn() {
                     >
                         Sign In
                     </Button>
+
                     <Grid container>
                         <Grid item xs>
                             <Link href="#" variant="body2">
