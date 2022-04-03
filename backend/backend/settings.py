@@ -29,6 +29,8 @@ ALLOWED_HOSTS = [
     'localhost'
 ]
 
+CSRF_COOKIE_NAME = "csrftoken"
+
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000/*',
     'http://localhost:8000/*'

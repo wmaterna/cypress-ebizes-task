@@ -12,7 +12,6 @@ def frontpage_view(request):
     return HttpResponse('/admin admin:admin<br>/login test:TestPass123')
 
 
-@csrf_exempt
 def login_view(request):
     form = None
     if request.method == 'POST':
