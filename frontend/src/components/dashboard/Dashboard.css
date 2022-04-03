@@ -1,0 +1,18 @@
+.dashboard {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+}
+
+.dashboard__navbar {
+    width: 20%;
+    background-color: cadetblue;
+}
+
+.dashboard__main-content {
+    width: 100%;
+}
+
+.dashboard__main-content {
+    padding: 10px;
+}

@@ -1,0 +1,35 @@
+.landing-page {
+    background-color: #eae9e7;
+    min-height: 80vh;
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    position: relative;
+}
+
+.title {
+    position: absolute;
+    max-width: 800px;
+    top: 25%;
+    left: 16px;
+}
+
+.clinic-name {
+    color: indianred;
+}
+
+.title h3 {
+    font-size: 3rem;
+
+    margin-bottom: 2rem;
+}
+
+.title p {
+    font-size: 2rem;
+}
+
+.landing-page img {
+    width: 80%;
+    max-width: 100%;
+    vertical-align: middle;
+}
