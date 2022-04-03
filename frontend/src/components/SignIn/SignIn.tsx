@@ -14,6 +14,10 @@ import axios from "axios";
 // import {HOST} from "../../constant/constant";
 import {useNavigate} from "react-router";
 
+interface Props {
+    setToken: Function;
+}
+
 interface SignInAccount {
     email: string;
     password: string
@@ -33,7 +37,7 @@ function Copyright(props: any) {
 }
 
 
-export default function SignIn() {
+export default function SignIn({setToken}: Props) {
     const navigate = useNavigate();
     let signInAccount: SignInAccount = {
         email: '',
@@ -56,24 +60,23 @@ export default function SignIn() {
 
     useEffect(() => {
         if (isSubmit) {
-            console.log("Valid Form ", formValues);
-
             loginUser(formValues).then((res) => {
-                    console.log(res.data)
-                    console.log(res)
-
                     if (res.data.success) {
+                        setToken(res.data.success);
                         navigate("/dashboard");
                     } else {
+                        setToken(res.data.success);
                         setError(true);
+                        setIsSubmit(false);
                     }
                 },
                 () => {
-                    console.log('error')
+                    console.log('Server Error')
                     setError(true);
+                    setIsSubmit(false);
                 });
         }
-    }, [isSubmit, formValues, navigate]);
+    }, [isSubmit, formValues, navigate, setToken]);
 
     async function loginUser(credentials: SignInAccount) {
         return axios.post('/login/', credentials);
