@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from .forms import LoginForm
 
 # Create your views here.
@@ -21,13 +21,16 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('members/')
-        return HttpResponse('This combination of username and password is not valid')
+                data = {'success': True}
+                # return redirect('members/')
+            else:
+                data = {'success': False, 'error': 'Username and password combination incorrect'}
+        return JsonResponse(data)
+        # return HttpResponse('This combination of username and password is not valid')
 
     elif request.method == 'GET':
         form = LoginForm()
-
-    return render(request, 'login.html', {'form': form})
+        return render(request, 'login.html', {'form': form})
 
 
 def loggedin_view(request):
