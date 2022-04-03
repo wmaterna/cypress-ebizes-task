@@ -11,7 +11,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from "axios";
-import {HOST} from "../../constant/constant";
+// import {HOST} from "../../constant/constant";
 import {useNavigate} from "react-router";
 
 interface SignInAccount {
@@ -62,7 +62,7 @@ export default function SignIn() {
                     console.log(res.data)
                     console.log(res)
 
-                    if (res.data.status) {
+                    if (res.data.success) {
                         navigate("/dashboard");
                     } else {
                         setError(true);
@@ -76,7 +76,7 @@ export default function SignIn() {
     }, [isSubmit, formValues, navigate]);
 
     async function loginUser(credentials: SignInAccount) {
-        return axios.post(`${HOST}/login`, credentials);
+        return axios.post('/login/', credentials);
     }
 
     return (
