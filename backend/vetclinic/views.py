@@ -3,7 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse
 from .forms import LoginForm
 from django.contrib.auth.forms import UserCreationForm
-
+from django.views.decorators.csrf import csrf_exempt
+import json
 # Create your views here.
 def register_view(request):
     form = UserCreationForm()
@@ -26,17 +27,16 @@ def frontpage_view(request):
 def login_view(request):
     form = None
     if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                data = {'success': True}
-                # return redirect('members/')
-            else:
-                data = {'success': False, 'error': 'Username and password combination incorrect'}
+        data = json.loads(request.body)
+        username = data['email']
+        password = data['password']
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            data = {'success': True}
+            # return redirect('members/')
+        else:
+            data = {'success': False, 'error': 'Username and password combination incorrect'}
         return JsonResponse(data)
         # return HttpResponse('This combination of username and password is not valid')
 

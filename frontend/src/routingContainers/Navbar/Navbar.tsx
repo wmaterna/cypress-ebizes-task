@@ -1,61 +1,68 @@
 import {Button} from '@mui/material';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Link as RouterLink} from 'react-router-dom';
 import './Navbar.css';
 import Typography from "@mui/material/Typography";
+import axios from "axios";
+import {useNavigate} from "react-router";
 
 interface props {
+    token: boolean;
+    setToken: Function;
 }
 
 interface state {
     isLoggedIn: boolean
 }
 
-class Navbar extends React.Component<props, state> {
-
-    constructor(props: props) {
-        super(props);
-        this.handleLoginClick = this.handleLoginClick.bind(this);
-        this.handleLogoutClick = this.handleLogoutClick.bind(this);
-        this.state = {isLoggedIn: false};
-    }
-
-    handleLoginClick() {
-        this.setState({isLoggedIn: true});
-    }
-
-    handleLogoutClick() {
-        this.setState({isLoggedIn: false});
-    }
-
-    render() {
-        const isLoggedIn = this.state.isLoggedIn;
-        let buttons;
-        if (!isLoggedIn) {
-            buttons = (<>
-                <Button variant="outlined" component={RouterLink} to={"/signIn"} onClick={this.handleLoginClick}>
-                    Sign In
-                </Button>
-                <Button variant="outlined" component={RouterLink} to="/signUp">
-                    Sign Up
+function renderButtons(isLoggedIn: boolean, handleLogoutClick: React.MouseEventHandler<HTMLAnchorElement> | undefined) {
+    let buttons;
+    if (!isLoggedIn) {
+        buttons = (<>
+            <Button variant="outlined" component={RouterLink} to={"/signIn"}>
+                Sign In
+            </Button>
+            <Button variant="outlined" component={RouterLink} to="/signUp">
+                Sign Up
+            </Button> </>);
+    } else {
+        buttons =
+            (<>
+                <Button variant="outlined" component={RouterLink} to="/" onClick={handleLogoutClick}>
+                    Wyloguj się
                 </Button> </>);
-        } else {
-            buttons =
-                (<>
-                    <Button variant="outlined" component={RouterLink} to="/" onClick={this.handleLogoutClick}>
-                        Wyloguj się
-                    </Button> </>);
-        }
-
-        return (
-            <nav className="nav__container">
-                <Typography className="nav__element nav__container-logo">
-                    <RouterLink className="nav__container-logo" to="/"> Clinic Vet </RouterLink>
-                </Typography>
-                {buttons}
-            </nav>
-        );
     }
+    return buttons;
 }
 
-export default Navbar;
+export default function Navbar({token, setToken}: props) {
+    const navigate = useNavigate();
+
+    const handleLogoutClick = (event: any) => {
+        event.preventDefault();
+        axios.post('/logout/').then(() => {
+            setToken(false);
+            navigate("/");
+        });
+    }
+
+    let buttons = renderButtons(token, handleLogoutClick);
+
+    useEffect(() => {
+        if (token) {
+            buttons = renderButtons(token, handleLogoutClick);
+        } else {
+            buttons = renderButtons(token, handleLogoutClick);
+        }
+    }, [token])
+
+    return (
+        <nav className="nav__container">
+            <Typography className="nav__element nav__container-logo">
+                <RouterLink className="nav__container-logo" to="/"> Clinic Vet </RouterLink>
+            </Typography>
+            {buttons}
+        </nav>
+    );
+}
+
