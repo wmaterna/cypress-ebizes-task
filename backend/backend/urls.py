@@ -18,6 +18,10 @@ from django.urls import path, include
 
 
 urlpatterns = [
+    path('', views.frontpage_view),
     path('admin/', admin.site.urls),
-    path('', include("vetclinic.urls")),
+    path('login/', views.login_view),
+    path('login/members/', views.loggedin_view),
+    path('logout/', views.logout_view),
+    path('register/', views.register_view),
 ]

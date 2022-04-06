@@ -2,14 +2,26 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse
 from .forms import LoginForm
+from django.contrib.auth.forms import UserCreationForm
 from django.views.decorators.csrf import csrf_exempt
 import json
 # Create your views here.
+def register_view(request):
+    form = UserCreationForm()
 
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+    return render(request, 'register.html', {'form': form})
 
 # temporary frontpage as the default one doesn't work
 def frontpage_view(request):
-    return HttpResponse('/admin admin:admin<br>/login test:TestPass123')
+    return HttpResponse('''
+    /admin admin:admin <br>
+    /login test:TestPass123 <br>
+    /register new user''')
 
 
 def login_view(request):
