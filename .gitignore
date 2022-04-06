@@ -27,3 +27,11 @@ yarn-error.log*
 /backend/.idea/
 
 env
+
+# python bin
+*.pyc
+*.pyo
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class

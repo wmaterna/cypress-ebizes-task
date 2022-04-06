@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-=&7^smxq5vdz6e9w+%1r0jo!@rk^@n^5&wl1g21#n#wdykf@12
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'localhost'
+    'localhost',
+    '127.0.0.1'
 ]
 
 CSRF_COOKIE_NAME = "csrftoken"
