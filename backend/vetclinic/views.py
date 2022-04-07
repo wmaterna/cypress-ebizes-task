@@ -3,17 +3,38 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse
 from .forms import LoginForm, SignUpForm
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
 import json
+
+
 # Create your views here.
 def register_view(request):
-    form = SignUpForm()
-
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
+        data = json.loads(request.body)
+        firstName = data.get('firstName', "Anonim")
+        lastName = data.get('lastName', "Anonim")
+        email = data['email']
+        password = data['password']
+        # TODO: check if already existed
+        user = User.objects.create_user(
+            username=firstName + '.' + lastName, 
+            email=email, 
+            password=password
+        )
+        if user is not None:
+            data = {'success': True}
+            user['firstName'] = firstName
+            user['lastName'] = lastName
+            user.save()
+        else:
+            data = {'success': False, 'error': 'User already exist'}
+        return JsonResponse(data)
+        # return HttpResponse('This combination of username and password is not valid')
 
-    return render(request, 'register.html', {'form': form})
+    elif request.method == 'GET':
+        form = SignUpForm(request.POST)
+        return render(request, 'register.html', {'form': form})
+
 
 # temporary frontpage as the default one doesn't work
 def frontpage_view(request):
@@ -33,21 +54,24 @@ def login_view(request):
         if user is not None:
             login(request, user)
             data = {'success': True}
-            # return redirect('members/')
+            print('Login successful')
         else:
+            print('Login failed')
             data = {'success': False, 'error': 'Username and password combination incorrect'}
         return JsonResponse(data)
-        # return HttpResponse('This combination of username and password is not valid')
 
+    # TODO: Remove later
     elif request.method == 'GET':
         form = LoginForm()
         return render(request, 'login.html', {'form': form})
 
 
+# TODO: Remove later
 def loggedin_view(request):
     return render(request, 'logged_in.html')
 
 
 def logout_view(request):
+    print('Loging out')
     logout(request)
-    return redirect('/login')
+    return JsonResponse({'success': True})
