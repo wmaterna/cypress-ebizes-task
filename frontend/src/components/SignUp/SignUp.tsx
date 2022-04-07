@@ -11,8 +11,8 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import {FormControl, FormHelperText} from "@mui/material";
 import {useEffect, useState} from "react";
-
-// import {HOST} from "../../constant/constant";
+import axios from "axios";
+import {useNavigate} from "react-router";
 
 
 interface Account {
@@ -37,6 +37,8 @@ function Copyright(props: any) {
 
 
 export default function SignUp() {
+    const navigate = useNavigate();
+
     let createNewAccount: Account = {
         firstName: '',
         lastName: '',
@@ -74,14 +76,20 @@ export default function SignUp() {
     useEffect(() => {
         if (Object.keys(formErrors).length === 0 && isSubmit) {
             console.log("Valid Form ", formValues);
+            createAccount(formValues).then((res) => {
+                    navigate("/signIn");
+                },
+                () => {
+                    console.log('Server Error')
+                    setIsSubmit(false);
+                });
 
-            // fetch(`${HOST}/account`, {
-            //     method: 'POST',
-            //     headers: {"Content-Type": "aplication/json"},
-            //     body: createNewAccount
-            // })
         }
-    }, [formErrors, isSubmit, formValues]);
+    }, [formErrors, isSubmit, formValues, navigate]);
+
+    async function createAccount(form: Account) {
+        return axios.post('/register/', form);
+    }
 
     return (
         <Container component="main" maxWidth="xs">
