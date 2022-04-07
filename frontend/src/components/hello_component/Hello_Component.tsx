@@ -17,7 +17,7 @@ const HelloComponent: React.FC<props> = () => {
                 </p>
             </div>
 
-            <img src={"landing_photo_dog.jpeg"} alt={"Sweet dog and vet"}/>
+            <img src={"landing_photo_dog.png"} alt={"Sweet dog and vet"}/>
         </div>
     )
 }
