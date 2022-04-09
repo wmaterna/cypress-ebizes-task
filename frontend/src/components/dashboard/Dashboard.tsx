@@ -4,6 +4,8 @@ import './Dashboard.css';
 import DashboardNavBar from "../../routingContainers/Dashboard_Navbar/Dashboard_Navbar";
 import SignIn from "../SignIn/SignIn";
 import useToken from "../../hooks/useToken";
+import Animals from "../animals/Animals";
+import {Route} from "react-router";
 
 interface props {
 
@@ -24,7 +26,7 @@ const Dashboard: React.FC<props> = () => {
             <div className="dashboard__main-content">
                 <Routes>
                     {/*<Routes>*/}
-                    {/*<Route path="/opcja1" element={<Hello_Component/>}/>*/}
+                    <Route path="/animals" element={<Animals/>}/>
                     {/*<Route path="/opcja2" element={<SignUp/>}/>*/}
                 </Routes>
             </div>
