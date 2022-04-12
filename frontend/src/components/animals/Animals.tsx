@@ -1,6 +1,16 @@
 import React, {useEffect, useState} from 'react';
 import './Animals.css';
-import {Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, TextField} from "@mui/material";
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControl,
+    Grid,
+    InputAdornment,
+    TextField
+} from "@mui/material";
 import PetsIcon from '@mui/icons-material/Pets';
 import Typography from '@mui/material/Typography';
 import axios from "axios";
@@ -13,6 +23,18 @@ interface Pet {
     name: string;
     species: string;
     race: string;
+    weight: number;
+    height: number;
+    dateOfBirth: string;
+}
+
+interface PetErrors {
+    name: string;
+    species: string;
+    race: string;
+    weight: string;
+    height: string;
+    dateOfBirth: string;
 }
 
 const Animals: React.FC<props> = () => {
@@ -20,21 +42,31 @@ const Animals: React.FC<props> = () => {
         name: '',
         species: '',
         race: '',
+        weight: 10,
+        height: 0,
+        dateOfBirth: ''
+    }
+
+    let petError: PetErrors = {
+        name: '',
+        species: '',
+        race: '',
+        weight: '',
+        height: '',
+        dateOfBirth: ''
     }
 
     const [open, setOpen] = React.useState(false);
-    const [formErrors, setFormErrors] = useState(newPet);
+    const [formErrors, setFormErrors] = useState(petError);
     const [formValues, setFormValues] = useState(newPet);
     const [serverError, setServerError] = useState("");
     const [isSubmit, setIsSubmit] = useState(false);
 
     const handleClickOpen = () => {
-        console.log('Otwarty')
         setOpen(true);
     };
 
     const handleClose = () => {
-        console.log('zamkniety')
         setOpen(false);
     };
 
@@ -59,6 +91,26 @@ const Animals: React.FC<props> = () => {
             errors.race = "Rasa jest wymagana!"
         }
 
+        if (!values.weight) {
+            errors.weight = "Podaj wagę zwierzęcia!"
+        }
+
+        if (!values.height) {
+            errors.height = "Podaj wzrost zwierzęcia!"
+        }
+
+        if (values.weight < 0) {
+            errors.weight = "Waga nie może być liczbą ujemną!"
+        }
+
+        if (values.height < 0) {
+            errors.height = "Wzrost nie może być liczbą ujemną!"
+        }
+
+        if (!values.dateOfBirth) {
+            errors.dateOfBirth = "Podaj datę urodzenia zwierzęcia!"
+        }
+
         return errors;
     }
 
@@ -76,6 +128,9 @@ const Animals: React.FC<props> = () => {
                     name: '',
                     species: '',
                     race: '',
+                    weight: 10,
+                    height: 0,
+                    dateOfBirth: '',
                 })
             }, () => {
                 setServerError("Wystąpił błąd, odśwież stronę i spróbuj jeszcze raz.")
@@ -159,6 +214,77 @@ const Animals: React.FC<props> = () => {
                                     />
                                 </FormControl>
                             </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        fullWidth
+                                        required
+                                        margin="dense"
+                                        id="weight"
+                                        name="weight"
+                                        label="Waga zwierzęcia"
+                                        type="number"
+                                        variant="standard"
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        InputProps={{
+                                            startAdornment: <InputAdornment position="start">kg</InputAdornment>,
+                                            inputProps: {min: 0}
+                                        }}
+                                        value={formValues.weight}
+                                        onChange={handleChange}
+                                        error={!!formErrors.weight}
+                                        helperText={formErrors.weight}
+                                    />
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        fullWidth
+                                        required
+                                        margin="dense"
+                                        id="height"
+                                        name="height"
+                                        label="Wzrost zwierzęcia"
+                                        type="number"
+                                        variant="standard"
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        InputProps={{
+                                            startAdornment: <InputAdornment position="start">m</InputAdornment>,
+                                            inputProps: {min: 0}
+                                        }}
+                                        value={formValues.height}
+                                        onChange={handleChange}
+                                        error={!!formErrors.height}
+                                        helperText={formErrors.height}
+                                    />
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={12} sm={6}>
+                                <FormControl fullWidth>
+                                    <TextField
+                                        fullWidth
+                                        required
+                                        margin="dense"
+                                        id="dateOfBirth"
+                                        name="dateOfBirth"
+                                        label="Data urodzenia"
+                                        type="text"
+                                        variant="standard"
+                                        value={formValues.dateOfBirth}
+                                        onChange={handleChange}
+                                        error={!!formErrors.dateOfBirth}
+                                        helperText={formErrors.dateOfBirth}
+                                    />
+                                </FormControl>
+                            </Grid>
                         </Grid>
 
                         <Grid item xs={12}>
@@ -172,11 +298,13 @@ const Animals: React.FC<props> = () => {
                         <Button onClick={handleClose}>ANULUJ</Button>
                         <Button variant="contained" onClick={handleSubmit}>DODAJ ZWIERZĘ</Button>
                     </DialogActions>
-
                 </Dialog>
-
             </header>
-            <div className="animals_list">
+
+            <div className="animals__list">
+                <Typography paragraph gutterBottom component="div">
+                    Dodaj nowego zwierzaka!
+                </Typography>
             </div>
         </div>
     )

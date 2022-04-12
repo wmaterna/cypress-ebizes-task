@@ -1,5 +1,5 @@
 .animals {
-
+    height: 80%;
 }
 
 .animals__header {
@@ -11,4 +11,11 @@
 
 .animals__header div {
     margin: 0;
+}
+
+.animals__list {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
