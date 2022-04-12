@@ -19,7 +19,7 @@ const DashboardNavBar: React.FC<props> = () => {
 
     return (
         <MenuList>
-            <MenuItem onClick={() => handleClick("/signUp")}>
+            <MenuItem onClick={() => handleClick("/dashboard/animals")}>
                 <ListItemIcon>
                     <PetsIcon fontSize="small"/>
                 </ListItemIcon>
