@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import './Animals.css';
 import {
-    Button,
+    Button, Container,
     Dialog,
     DialogActions,
     DialogContent,
@@ -143,8 +143,8 @@ const Animals: React.FC<props> = () => {
     }
 
     return (
-        <div className="animals">
-            <header className="animals__header">
+        <Container>
+            <div className="animals__header">
                 <Typography variant="h4" gutterBottom component="div">
                     Moje zwierzęta
                 </Typography>
@@ -299,14 +299,14 @@ const Animals: React.FC<props> = () => {
                         <Button variant="contained" onClick={handleSubmit}>DODAJ ZWIERZĘ</Button>
                     </DialogActions>
                 </Dialog>
-            </header>
+            </div>
 
             <div className="animals__list">
                 <Typography paragraph gutterBottom component="div">
                     Dodaj nowego zwierzaka!
                 </Typography>
             </div>
-        </div>
+        </Container>
     )
 }
 
