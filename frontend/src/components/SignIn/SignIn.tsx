@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,6 +13,7 @@ import Container from '@mui/material/Container';
 import axios from "axios";
 // import {HOST} from "../../constant/constant";
 import {useNavigate} from "react-router";
+import { UserContext } from "../../context/UserContext";
 
 interface Props {
     setToken: Function;
@@ -37,13 +38,14 @@ function Copyright(props: any) {
 }
 
 
-export default function SignIn({setToken}: Props) {
+export default function SignIn() {
     const navigate = useNavigate();
     let signInAccount: SignInAccount = {
         email: '',
         password: '',
     }
 
+    const {logIn} = useContext(UserContext)
     const [formValues, setFormValues] = useState(signInAccount);
     const [isSubmit, setIsSubmit] = useState(false);
     const [error, setError] = useState(false);
@@ -62,10 +64,10 @@ export default function SignIn({setToken}: Props) {
         if (isSubmit) {
             loginUser(formValues).then((res) => {
                     if (res.data.success) {
-                        setToken(res.data.success);
+                        logIn(res.data.success.toString())
                         navigate("/dashboard");
                     } else {
-                        setToken(res.data.success);
+                        // setToken(res.data.success);
                         setError(true);
                         setIsSubmit(false);
                     }
@@ -76,7 +78,7 @@ export default function SignIn({setToken}: Props) {
                     setIsSubmit(false);
                 });
         }
-    }, [isSubmit, formValues, navigate, setToken]);
+    }, [isSubmit, formValues, navigate]);
 
     async function loginUser(credentials: SignInAccount) {
         return axios.post('/login/', credentials);

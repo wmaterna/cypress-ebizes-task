@@ -16,3 +16,8 @@
 /*    padding: 10px 15px;*/
 /*    text-decoration: none;*/
 /*}*/
+
+
+.sidebar__active_button {
+    background-color: #050505;
+}
