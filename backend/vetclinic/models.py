@@ -52,3 +52,15 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+# dummy animal model, extend later
+class Animal(models.Model):
+    name = models.CharField(max_length=150)
+
+
+class Visit(models.Model):
+    date = models.DateTimeField()
+    doctorId = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
+    animalId = models.OneToOneField(Animal, on_delete=models.CASCADE, null=True, blank=True)
+    note = models.TextField(blank=True, null=True)
