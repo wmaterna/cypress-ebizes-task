@@ -1,10 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse
 from .forms import LoginForm, SignUpForm
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
 import json
+from .models import CustomUser
 
 
 # Create your views here.
@@ -16,10 +15,11 @@ def register_view(request):
         email = data['email']
         password = data['password']
         # TODO: check if already existed
-        user = User.objects.create_user(
-            username=firstName + '.' + lastName, 
-            email=email, 
-            password=password
+        user = CustomUser.objects.create_user(
+            email=email,
+            password=password,
+            firstName=firstName,
+            lastName=lastName
         )
         if user is not None:
             data = {'success': True}
@@ -39,8 +39,8 @@ def register_view(request):
 # temporary frontpage as the default one doesn't work
 def frontpage_view(request):
     return HttpResponse('''
-    /admin admin:admin <br>
-    /login test:TestPass123 <br>
+    /admin admin@admin.com:admin <br>
+    /login test@test.com:TestPass123 <br>
     /register new user''')
 
 
@@ -50,6 +50,7 @@ def login_view(request):
         data = json.loads(request.body)
         username = data['email']
         password = data['password']
+        print(f'{username} : {password}')
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)

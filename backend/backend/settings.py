@@ -137,8 +137,4 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Endpoint for loging in
-LOGIN_URL = 'login/'
-
-# Redirect back to login page after logging out
-LOGOUT_REDIRECT_URL = 'login/'
+AUTH_USER_MODEL = 'vetclinic.CustomUser'
