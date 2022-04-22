@@ -42,5 +42,4 @@ __pycache__/
 backend/__pycache
 backend/__pycache/
 
-backend/vetclinic/
 backend/vetclinic/migrations/__pychache__
