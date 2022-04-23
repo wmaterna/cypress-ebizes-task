@@ -93,7 +93,7 @@ def add_visits_view(request):
             date_to = [int(x) for x in data['dateTo'].split('-')]
             time_from = [int(x) for x in data['timeFrom'].split(':')]
             time_to = [int(x) for x in data['timeTo'].split(':')]
-            doctor_id = int(data['doctor'])
+            doctor_id = int(data['doctorId'])
             visit_time = int(data['visitTime'])
             break_time = int(data['breakTime'])
             repeat = data['repeatEvery'].lower()
