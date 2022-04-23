@@ -4,14 +4,15 @@ import {Link as RouterLink} from 'react-router-dom';
 import './Navbar.css';
 import Typography from "@mui/material/Typography";
 import axios from "axios";
-import {useNavigate} from "react-router";
+import {useLocation, useNavigate} from "react-router";
 import { UserContext } from "../../context/UserContext";
-
+import Sidebar from "../Sidebar/Sidebar";
 
 export default function Navbar() {
     const theme = useTheme();
     const {logOut, token} = useContext(UserContext)
     const navigate = useNavigate();
+    const {pathname} = useLocation()
 
     const handleLogoutClick = (event: any) => {
         event.preventDefault();
@@ -21,35 +22,40 @@ export default function Navbar() {
         });
     }
 
-    return (
-        <AppBar
-            sx={{zIndex: theme.zIndex.drawer + 1, marginBottom: 3}}
-            elevation={0}
-            position="sticky"
-        >
-            <Toolbar>
-               <Grid container justifyContent="space-between">
-                   <Typography>
-                       <RouterLink className="nav__container-logo" to="/"> Clinic Vet </RouterLink>
-                   </Typography>
 
-                   {token ? (
-                       <Button variant="outlined" component={RouterLink} to="/" onClick={handleLogoutClick} color="secondary">
-                           Wyloguj się
-                       </Button>
-                   ) : (
-                       <Grid>
-                           <Button variant="outlined" component={RouterLink} to={"/signIn"} color="secondary">
-                               Sign In
-                           </Button>
-                           <Button variant="outlined" component={RouterLink} to="/signUp" color="secondary">
-                               Sign Up
-                           </Button>
-                       </Grid>
-                   )}
-               </Grid>
-            </Toolbar>
-        </AppBar>
+
+    return (
+        <>
+            <AppBar
+                sx={{zIndex: theme.zIndex.drawer + 1, marginBottom: 3}}
+                elevation={0}
+                position="sticky"
+            >
+                <Toolbar>
+                    <Grid container justifyContent="space-between">
+                        <Typography>
+                            <RouterLink className="nav__container-logo" to="/"> Clinic Vet </RouterLink>
+                        </Typography>
+
+                        {token ? (
+                            <Button variant="outlined" component={RouterLink} to="/" onClick={handleLogoutClick} color="secondary">
+                                Wyloguj się
+                            </Button>
+                        ) : (
+                            <Grid>
+                                <Button variant="outlined" component={RouterLink} to={"/signIn"} color="secondary">
+                                    Sign In
+                                </Button>
+                                <Button variant="outlined" component={RouterLink} to="/signUp" color="secondary">
+                                    Sign Up
+                                </Button>
+                            </Grid>
+                        )}
+                    </Grid>
+                </Toolbar>
+            </AppBar>
+            {(token && pathname.startsWith("/dashboard")) && (<Sidebar/>)}
+        </>
     )
 
     // return (

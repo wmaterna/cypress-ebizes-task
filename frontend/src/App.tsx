@@ -22,7 +22,7 @@ const App: React.FC = () => {
         <AppContextProvider>
             <Router>
                 <Navbar />
-                {token && <Sidebar/>}
+                {/*{token && <Sidebar/>}*/}
                     <Routes>
                         <Route path="/">
                             <Route path="/signUp" element={<SignUp/>}/>
