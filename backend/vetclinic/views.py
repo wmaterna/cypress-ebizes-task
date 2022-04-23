@@ -135,6 +135,8 @@ def add_visits_view(request):
                         doctor = CustomUser.objects.get(id__exact=doctor_id)
                     except ObjectDoesNotExist:
                         return JsonResponse({'success': False, 'error': 'Wrong doctor id'})
+                    if not doctor.is_doctor:
+                        return JsonResponse({'success': False, 'error': 'User with this id is not a doctor'})
 
                     visit = Visit.objects.create(date=date_time, doctor_id=doctor)
                     # TODO: check if that visit already exists?
