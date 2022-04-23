@@ -23,7 +23,7 @@ export default function Navbar() {
 
     return (
         <AppBar
-            sx={{zIndex: theme.zIndex.drawer + 1}}
+            sx={{zIndex: theme.zIndex.drawer + 1, marginBottom: 3}}
             elevation={0}
             position="sticky"
         >
