@@ -61,6 +61,6 @@ class Animal(models.Model):
 
 class Visit(models.Model):
     date = models.DateTimeField()
-    doctorId = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    animalId = models.OneToOneField(Animal, on_delete=models.CASCADE, null=True, blank=True)
+    doctor_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    animal_id = models.ForeignKey(Animal, on_delete=models.CASCADE, blank=True, null=True)
     note = models.TextField(blank=True, null=True)
