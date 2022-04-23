@@ -64,3 +64,6 @@ class Visit(models.Model):
     doctor_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     animal_id = models.ForeignKey(Animal, on_delete=models.CASCADE, blank=True, null=True)
     note = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.doctor_id.email} {self.date}'
