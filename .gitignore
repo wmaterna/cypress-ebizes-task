@@ -2,6 +2,8 @@
 
 # dependencies
 /.idea
+/frontend/.idea
+/backend/.idea
 /node_modules
 node_modules/
 /.pnp
@@ -33,5 +35,11 @@ env
 *.pyo
 # Byte-compiled / optimized / DLL files
 __pycache__/
+/__pycache__
 *.py[cod]
 *$py.class
+
+backend/__pycache
+backend/__pycache/
+
+backend/vetclinic/migrations/__pychache__

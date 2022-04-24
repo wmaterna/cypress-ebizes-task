@@ -1,33 +1,45 @@
 import './App.css';
-import Navbar from "./routingContainers/Navbar/Navbar";
-import Dashboard from "./components/dashboard/Dashboard";
-import React, {useState} from "react";
+import Navbar from "./components/Navbar/Navbar";
+import React, { useContext } from "react";
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import SignUp from "./components/SignUp/SignUp";
 import SignIn from "./components/SignIn/SignIn";
 import HelloComponent from "./components/hello_component/Hello_Component";
-import useToken from "./hooks/useToken";
+import Animals from "./components/animals/Animals";
+import AppContextProvider from "./context";
+import { UserContext } from "./context/UserContext";
+import Sidebar from "./components/Sidebar/Sidebar";
+import ScheduleVisit from "./screens/ScheduleVisit";
+import { Box } from "@mui/material";
 
 
-interface props {
 
-}
-
-const App: React.FC<props> = () => {
-    const {token, setToken} = useToken();
-
+const App: React.FC = () => {
+    const {token} = useContext(UserContext)
     return (
-        <div>
+        <AppContextProvider>
             <Router>
-                <Navbar token={token} setToken={setToken}/>
-                <Routes>
-                    <Route path="/" element={<HelloComponent/>}/>
-                    <Route path="/dashboard" element={<Dashboard/>}/>
-                    <Route path="/signUp" element={<SignUp/>}/>
-                    <Route path="/signIn" element={<SignIn setToken={setToken}/>}/>
-                </Routes>
+                <Navbar />
+                {token && <Sidebar/>}
+                    <Routes>
+                        <Route path="/">
+                            <Route path="/signUp" element={<SignUp/>}/>
+                            <Route path="/signIn" element={<SignIn/>}/>
+
+                            {token && (
+                                <>
+                                    {/*<Route path="/dashboard" element={<Sidebar/>}/>*/}
+                                    <Route path="/dashboard/animals" element={<Animals/>}/>
+                                    <Route path="/dashboard/scheduleVisit" element={<ScheduleVisit/>}/>
+                                </>
+                            )}
+
+                            <Route index element={<HelloComponent/>}/>
+                        </Route>
+                        {/*<Route path="/" element={<HelloComponent/>}/>*/}
+                    </Routes>
             </Router>
-        </div>
+        </AppContextProvider>
     );
 }
 
