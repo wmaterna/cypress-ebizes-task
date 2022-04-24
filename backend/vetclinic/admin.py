@@ -4,6 +4,16 @@ from .models import Animal
 from .models import Visit
 
 
-admin.site.register(CustomUser)
+class VisitAdmin(admin.ModelAdmin):
+    list_display = ['doctor_id', 'date']
+    ordering = ['date']
+
+
+class CustomUserAdmin(admin.ModelAdmin):
+    list_display = ['id', 'email']
+    ordering = ['id']
+
+
+admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Animal)
-admin.site.register(Visit)
+admin.site.register(Visit, VisitAdmin)
