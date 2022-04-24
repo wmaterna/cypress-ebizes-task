@@ -138,7 +138,7 @@ def add_visits_view(request):
                     if not doctor.is_doctor:
                         return JsonResponse({'success': False, 'error': 'User with this id is not a doctor'})
 
-                    visit = Visit.objects.create(date=date_time, doctor_id=doctor)
+                    visit = Visit.objects.create(date=date_time, doctor=doctor)
                     # TODO: check if that visit already exists?
                     visit.save()
                     minutes += visit_time + break_time
@@ -164,7 +164,7 @@ def get_visits_view(request):
         end_date = datetime.date(date_to[0], date_to[1], date_to[2] + 1)
 
         visits = Visit.objects.filter(
-            doctor_id=doctor_id
+            doctor=doctor_id
         ).filter(
             date__gte=start_date
         ).filter(
