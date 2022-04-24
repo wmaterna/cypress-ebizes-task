@@ -25,5 +25,5 @@ urlpatterns = [
     path('logout/', views.logout_view),
     path('register/', views.register_view),
     path('visits/add', views.add_visits_view),
-    path('visits/get', views.get_visits_view)
+    path('doctors/<int:doctor_id>/get', views.get_visits_view)
 ]

@@ -148,13 +148,18 @@ def add_visits_view(request):
 
 
 @csrf_exempt
-def get_visits_view(request):
+def get_visits_view(request, doctor_id):
+    try:
+        CustomUser.objects.get(id__exact=doctor_id)
+    except ObjectDoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Wrong doctor id'})
+
     if request.method == 'GET':
         try:
             data = json.loads(request.body)
             date_from = [int(x) for x in data['from'].split('-')]
             date_to = [int(x) for x in data['to'].split('-')]
-            doctor_id = int(data['doctorId'])
+            # doctor_id = int(data['doctorId'])
         except JSONDecodeError:
             return JsonResponse({'success': False, 'error': 'Invalid body'})
         except KeyError:
@@ -163,14 +168,32 @@ def get_visits_view(request):
         start_date = datetime.date(date_from[0], date_from[1], date_from[2])
         end_date = datetime.date(date_to[0], date_to[1], date_to[2] + 1)
 
-        visits = Visit.objects.filter(
-            doctor=doctor_id
-        ).filter(
-            date__gte=start_date
-        ).filter(
-            date__lt=end_date
-        )
+        visits = None
+        try:
+            if request.user.is_doctor:
+                visits = Visit.objects.filter(
+                    doctor=doctor_id
+                ).filter(
+                    date__gte=start_date
+                ).filter(
+                    date__lt=end_date
+                ).exclude(
+                    animal_id=None
+                )
+        # TODO: Only serve logged in users?
+        except AttributeError:
+            pass  # pass this if when user is not authenticated
+
+        if visits is None:
+            visits = Visit.objects.filter(
+                doctor=doctor_id
+            ).filter(
+                date__gte=start_date
+            ).filter(
+                date__lt=end_date
+            ).filter(
+                animal_id=None
+            )
+
         data = list(visits.values())
         return JsonResponse(data, safe=False)
-
-    return JsonResponse({'kek': True})
