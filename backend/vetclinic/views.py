@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.db import IntegrityError
 
 import json
 from json import JSONDecodeError
@@ -15,32 +16,30 @@ from .forms import LoginForm, SignUpForm
 # Create your views here.
 def register_view(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        firstName = data.get('firstName', "Anonim")
-        lastName = data.get('lastName', "Anonim")
-        email = data['email']
-        password = data['password']
-        # TODO: check if already existed
-        user = CustomUser.objects.create_user(
-            email=email,
-            password=password,
-            firstName=firstName,
-            lastName=lastName
-        )
-        if user is not None:
-            data = {'success': True}
-            user['firstName'] = firstName
-            user['lastName'] = lastName
-            user.save()
-        else:
-            data = {'success': False, 'error': 'User already exist'}
-        return JsonResponse(data)
-        # return HttpResponse('This combination of username and password is not valid')
+        try:
+            data = json.loads(request.body)
+            firstName = data.get('firstName', "Anonim")
+            lastName = data.get('lastName', "Anonim")
+            email = data['email']
+            password = data['password']
+        except JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid body'})
+        except KeyError:
+            return JsonResponse({'success': False, 'error': 'Invalid body'})
 
-    elif request.method == 'GET':
-        form = SignUpForm(request.POST)
-        return render(request, 'register.html', {'form': form})
-
+        try:
+            user = CustomUser.objects.create_user(
+                email=email,
+                password=password,
+                first_name=firstName,
+                last_name=lastName
+            )
+            if user is not None:
+                user.save()
+                return JsonResponse({'success': True})
+        except IntegrityError:
+            print('Error: Email exist in database')
+            return JsonResponse({'success': False, 'error': 'User already exist'}, status=500)
 
 # temporary frontpage as the default one doesn't work
 def frontpage_view(request):

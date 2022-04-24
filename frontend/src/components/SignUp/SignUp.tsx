@@ -19,7 +19,8 @@ interface Account {
     firstName: string;
     lastName: string;
     email: string;
-    password: string
+    password: string;
+    repeatPassword: string;
 }
 
 function Copyright(props: any) {
@@ -44,16 +45,17 @@ export default function SignUp() {
         lastName: '',
         email: '',
         password: '',
+        repeatPassword: '',
     }
 
     const [formValues, setFormValues] = useState(createNewAccount);
     const [formErrors, setFormErrors] = useState(createNewAccount);
+    const [submitError, setSubmitError] = useState("");
     const [isSubmit, setIsSubmit] = useState(false);
 
     const handleChange = (event: any) => {
         const {name, value} = event.target;
         setFormValues({...formValues, [name]: value});
-        setFormErrors(validate(formValues));
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -70,20 +72,30 @@ export default function SignUp() {
             errors.email = "Podaj poprawny adres email"
         }
 
+        if ((values.password !== values.repeatPassword) && (values.repeatPassword !== '')) {
+            errors.password = "Hasła muszą być identyczne"
+        }
+
         return errors;
     }
 
     useEffect(() => {
         if (Object.keys(formErrors).length === 0 && isSubmit) {
             console.log("Valid Form ", formValues);
-            createAccount(formValues).then((res) => {
-                    navigate("/signIn");
-                },
+
+            createAccount(formValues).then(
                 () => {
-                    console.log('Server Error')
+                    navigate("/signIn");
+                }).catch(
+                (error) => {
+                    if (error.response.data.error === "User already exist") {
+                        setFormErrors({...formErrors, email: 'Ten adres e-mail jest już zajęty, wybierz inny.'})
+                    } else {
+                        setSubmitError("Wystąpił błąd serwera, odśwież i spróbuj jeszcze raz.")
+                    }
+
                     setIsSubmit(false);
                 });
-
         }
     }, [formErrors, isSubmit, formValues, navigate]);
 
@@ -125,6 +137,7 @@ export default function SignUp() {
                                 />
                             </FormControl>
                         </Grid>
+
                         <Grid item xs={12} sm={6}>
                             <FormControl>
                                 <TextField
@@ -139,6 +152,7 @@ export default function SignUp() {
                                 />
                             </FormControl>
                         </Grid>
+
                         <Grid item xs={12}>
                             <FormControl fullWidth>
                                 <TextField
@@ -156,6 +170,7 @@ export default function SignUp() {
                                 <FormHelperText id="my-helper-text">Email będzie służył do logowania.</FormHelperText>
                             </FormControl>
                         </Grid>
+
                         <Grid item xs={12}>
                             <FormControl fullWidth>
                                 <TextField
@@ -170,6 +185,29 @@ export default function SignUp() {
                                     onChange={handleChange}
                                 />
                             </FormControl>
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            <FormControl fullWidth>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    name="repeatPassword"
+                                    label="Powtórz Hasło"
+                                    type="password"
+                                    id="repeatPassword"
+                                    error={!!formErrors.password}
+                                    helperText={formErrors.password}
+                                    value={formValues.repeatPassword}
+                                    onChange={handleChange}
+                                />
+                            </FormControl>
+                        </Grid>
+
+                        <Grid item xs={12}>
+                            <Typography color="red" gutterBottom component="p">
+                                {submitError}
+                            </Typography>
                         </Grid>
                     </Grid>
                     <Button

@@ -10,7 +10,7 @@ class VisitAdmin(admin.ModelAdmin):
 
 
 class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ['id', 'email']
+    list_display = ['id', 'email', 'first_name', 'last_name']
     ordering = ['id']
 
 
