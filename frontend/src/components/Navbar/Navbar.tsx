@@ -1,5 +1,5 @@
 import { AppBar, Button, Grid, Toolbar, useTheme } from '@mui/material';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {Link as RouterLink} from 'react-router-dom';
 import './Navbar.css';
 import Typography from "@mui/material/Typography";
@@ -34,15 +34,15 @@ export default function Navbar() {
                    </Typography>
 
                    {token ? (
-                       <Button variant="outlined" component={RouterLink} to="/" onClick={handleLogoutClick} color="secondary">
+                       <Button className="panel-btn-register" variant="outlined" component={RouterLink} to="/" onClick={handleLogoutClick}>
                            Wyloguj się
                        </Button>
                    ) : (
                        <Grid>
-                           <Button variant="outlined" component={RouterLink} to={"/signIn"} color="secondary">
+                           <Button className="panel-btn-log" variant="text" component={RouterLink} to={"/signIn"} color="secondary">
                                Sign In
                            </Button>
-                           <Button variant="outlined" component={RouterLink} to="/signUp" color="secondary">
+                           <Button className="panel-btn-register" variant="outlined" component={RouterLink} to="/signUp">
                                Sign Up
                            </Button>
                        </Grid>

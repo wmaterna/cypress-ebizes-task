@@ -1,5 +1,5 @@
 .nav__container {
-    height: 55px;
+    height: 60px;
     background-color: #fff;
     /*margin-bottom: 10px;*/
     padding: 0;
@@ -17,11 +17,20 @@
 }
 
 .nav__container-logo {
-    margin-left: 20px;
+    margin-left: 10px;
     flex: 1;
     order: 0;
     font-size: 1.5rem;
     text-decoration: none;
     font-weight: 700;
-    color: #346007;
+    color: white;
+}
+.panel-btn-log{
+    color: white !important;
+    font-weight: 800 !important;
+    dont-size: 1.8rem !important;
+}
+.panel-btn-register {
+    color: white !important;
+    border-color: white !important;
 }
