@@ -4,6 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from .forms import LoginForm, SignUpForm
 import json
 from .models import CustomUser
+from django.views.decorators.csrf import csrf_exempt
 
 
 # Create your views here.
@@ -43,7 +44,7 @@ def frontpage_view(request):
     /login test@test.com:TestPass123 <br>
     /register new user''')
 
-
+@csrf_exempt
 def login_view(request):
     form = None
     if request.method == 'POST':
