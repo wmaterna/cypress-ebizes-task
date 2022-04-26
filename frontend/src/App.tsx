@@ -10,9 +10,11 @@ import AppContextProvider from "./context";
 import { UserContext } from "./context/UserContext";
 import Sidebar from "./components/Sidebar/Sidebar";
 import ScheduleVisit from "./screens/ScheduleVisit";
-import { Box } from "@mui/material";
 
+import "moment/locale/pl"
+import moment from "moment";
 
+moment.locale("pl")
 
 const App: React.FC = () => {
     const {token} = useContext(UserContext)
@@ -20,18 +22,20 @@ const App: React.FC = () => {
         <AppContextProvider>
             <Router>
                 <Navbar />
-                {token && <Sidebar/>}
+                {/*{token && <Sidebar/>}*/}
                     <Routes>
                         <Route path="/">
                             <Route path="/signUp" element={<SignUp/>}/>
                             <Route path="/signIn" element={<SignIn/>}/>
 
                             {token && (
-                                <>
+                                <Route path="/dashboard">
+
                                     {/*<Route path="/dashboard" element={<Sidebar/>}/>*/}
                                     <Route path="/dashboard/animals" element={<Animals/>}/>
                                     <Route path="/dashboard/scheduleVisit" element={<ScheduleVisit/>}/>
-                                </>
+                                    {/*<Route index element={<Sidebar/>}/>*/}
+                                </Route>
                             )}
 
                             <Route index element={<HelloComponent/>}/>

@@ -1,6 +1,10 @@
 import React, { ReactElement } from "react";
 import { UserContextProvider } from "./UserContext";
 import { createTheme, ThemeProvider } from "@mui/material";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
+import moment from "moment";
+
 
 const theme = createTheme({
 	palette: {
@@ -16,9 +20,11 @@ const theme = createTheme({
 
 const AppContextProvider: React.FC<{children: ReactElement}> = ({children}) => (
 	<UserContextProvider>
-		<ThemeProvider theme={theme}>
-			{children}
-		</ThemeProvider>
+		<LocalizationProvider dateAdapter={AdapterMoment} locale={moment.locale("pl")}>
+			<ThemeProvider theme={theme}>
+				{children}
+			</ThemeProvider>
+		</LocalizationProvider>
 	</UserContextProvider>
 )
 
