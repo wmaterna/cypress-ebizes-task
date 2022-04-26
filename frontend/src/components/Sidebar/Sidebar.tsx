@@ -20,6 +20,7 @@ const Sidebar: React.FC = () => {
 
     return (
         <Drawer
+            open={true}
             variant="permanent"
             PaperProps={{
                 sx: {
