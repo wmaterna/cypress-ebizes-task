@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@900&family=Roboto&display=swap');
 .App {
     text-align: center;
 }
@@ -10,6 +11,12 @@
 .App-logo {
     height: 40vmin;
     pointer-events: none;
+}
+h3 {
+    font-family: 'Lato', sans-serif;
+}
+p {
+    font-family: 'Roboto', sans-serif;
 }
 
 @media (prefers-reduced-motion: no-preference) {

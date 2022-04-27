@@ -145,7 +145,7 @@ const Animals: React.FC<props> = () => {
     }
 
     return (
-        <Container>
+        <div style={{width: "68%", marginLeft: "25%", padding: "5%"}}>
             <div className="animals__header">
                 <Typography variant="h4" gutterBottom component="div">
                     Moje zwierzęta
@@ -308,7 +308,7 @@ const Animals: React.FC<props> = () => {
                     Dodaj nowego zwierzaka!
                 </Typography>
             </div>
-        </Container>
+        </div>
     )
 }
 
