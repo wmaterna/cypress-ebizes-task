@@ -132,8 +132,10 @@ const Animals: React.FC<props> = () => {
                     height: 0,
                     dateOfBirth: '',
                 })
+                setIsSubmit(false);
             }, () => {
                 setServerError("Wystąpił błąd, odśwież stronę i spróbuj jeszcze raz.")
+                setIsSubmit(false);
             })
         }
     }, [formErrors, isSubmit, formValues]);
@@ -256,7 +258,7 @@ const Animals: React.FC<props> = () => {
                                             shrink: true,
                                         }}
                                         InputProps={{
-                                            startAdornment: <InputAdornment position="start">m</InputAdornment>,
+                                            startAdornment: <InputAdornment position="start">cm</InputAdornment>,
                                             inputProps: {min: 0}
                                         }}
                                         value={formValues.height}
