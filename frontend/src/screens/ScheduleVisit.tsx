@@ -62,7 +62,7 @@ const ScheduleVisit: React.FC = () => {
         setSelectedVisitId(null)
     }, [selectedDate, doctorId])
 
-
+    console.log(visits)
     const datesMap: DailyVisits[] = useMemo(() => {
         const start = moment(selectedDate).startOf("week");
         const end = moment(selectedDate).endOf("week");
@@ -104,9 +104,9 @@ const ScheduleVisit: React.FC = () => {
                         onChange={e => setDoctorId(e.target.value !== "" ? e.target.value as number : "")}
                         value={doctorId}
                     >
-                        {doctors.map(({id, firstName, lastName}) => (
+                        {doctors.map(({id, name}) => (
                             <MenuItem key={id} value={id}>
-                                {firstName} {lastName}
+                                {name}
                             </MenuItem>
                         ))}
                     </CustomSelect>
