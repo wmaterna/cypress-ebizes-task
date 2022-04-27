@@ -43,7 +43,6 @@ const ScheduleVisit: React.FC = () => {
     const [doctorId, setDoctorId] = useState<number | "">("");
     const [selectedDate, setSelectedDate] = useState<Moment>(moment());
     const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
-
     const [doctors, setDoctors] = useState<Doctor[]>([]);
     const [visits, setVisits] = useState<Visit[]>([])
 
@@ -92,7 +91,7 @@ const ScheduleVisit: React.FC = () => {
 
 
     return (
-        <Container>
+        <div style={{width: "68%", marginLeft: "25%", padding: "5%"}}>
             <Typography variant="h4">
                 Zaplanuj wizytę
             </Typography>
@@ -170,7 +169,7 @@ const ScheduleVisit: React.FC = () => {
                     </Typography>
                 </Grid>
             )}
-        </Container>
+        </div>
     )
 }
 

@@ -27,6 +27,10 @@ const getAllDoctors = (): Promise<Doctor[]> => {
     return Promise.resolve(doctors);
 }
 
+// const postVisitInfo = (): Promise<Doctor[]> => {
+//     return axios.post()
+// }
+
 
 export const doctorsApi = {
     getAllDoctors,
