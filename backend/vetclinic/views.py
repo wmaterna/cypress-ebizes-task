@@ -10,10 +10,11 @@ from json import JSONDecodeError
 import datetime
 
 from .models import CustomUser, Visit
-from .forms import LoginForm, SignUpForm
+from .forms import LoginForm
 
 
 # Create your views here.
+@csrf_exempt
 def register_view(request):
     if request.method == 'POST':
         try:
@@ -43,6 +44,7 @@ def register_view(request):
 
 
 # temporary frontpage as the default one doesn't work
+@csrf_exempt
 def frontpage_view(request):
     return HttpResponse('''
     /admin admin@admin.com:admin <br>
@@ -50,6 +52,7 @@ def frontpage_view(request):
     /register new user''')
 
 
+@csrf_exempt
 def login_view(request):
     form = None
     if request.method == 'POST':
@@ -74,10 +77,12 @@ def login_view(request):
 
 
 # TODO: Remove later
+@csrf_exempt
 def loggedin_view(request):
     return render(request, 'logged_in.html')
 
 
+@csrf_exempt
 def logout_view(request):
     print('Loging out')
     logout(request)
@@ -93,26 +98,29 @@ def add_visits_view(request):
             date_to = [int(x) for x in data['dateTo'].split('-')]
             time_from = [int(x) for x in data['timeFrom'].split(':')]
             time_to = [int(x) for x in data['timeTo'].split(':')]
-            doctor_id = int(data['doctorId'])
+            doctor_id = request.user.id
             visit_time = int(data['visitTime'])
             break_time = int(data['breakTime'])
-            repeat = data['repeatEvery'].lower()
-            if repeat == 'monday':
-                repeat = 0
-            elif repeat == 'tuesday':
-                repeat = 1
-            elif repeat == 'wednesday':
-                repeat = 2
-            elif repeat == 'thursday':
-                repeat = 3
-            elif repeat == 'friday':
-                repeat = 4
-            elif repeat == 'saturday':
-                repeat = 5
-            elif repeat == 'sunday':
-                repeat = 6
-            else:
-                return JsonResponse({'success': False, 'error': 'Invalid weekday'})
+
+            repeat = data['repeatEvery']
+            for i in range(len(repeat)):
+                if repeat[i].lower() == 'monday':
+                    repeat[i] = 0
+                elif repeat[i].lower() == 'tuesday':
+                    repeat[i] = 1
+                elif repeat[i].lower() == 'wednesday':
+                    repeat[i] = 2
+                elif repeat[i].lower() == 'thursday':
+                    repeat[i] = 3
+                elif repeat[i].lower() == 'friday':
+                    repeat[i] = 4
+                elif repeat[i].lower() == 'saturday':
+                    repeat[i] = 5
+                elif repeat[i].lower() == 'sunday':
+                    repeat[i] = 6
+                else:
+                    return JsonResponse({'success': False, 'error': 'Invalid weekday'})
+
         except JSONDecodeError:
             return JsonResponse({'success': False, 'error': 'Invalid body'})
         except KeyError:
@@ -122,21 +130,22 @@ def add_visits_view(request):
         end_date = datetime.date(date_to[0], date_to[1], date_to[2] + 1)
         date_range = end_date - start_date
 
+        try:
+            doctor = CustomUser.objects.get(id=doctor_id)
+        except ObjectDoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Wrong doctor id'})
+        if not doctor.is_doctor:
+            return JsonResponse({'success': False, 'error': 'User with this id is not a doctor'})
+
         for i in range(date_range.days):
             date = start_date + datetime.timedelta(days=i)
-            if date.weekday() != repeat:
+            if date.weekday() not in repeat:
                 continue
             minutes = 0
             for hour in range(time_from[0], time_to[0]):
                 while minutes < 60:
                     date_time = datetime.datetime(year=date.year, month=date.month, day=date.day,
                                                   hour=hour, minute=minutes)
-                    try:
-                        doctor = CustomUser.objects.get(id__exact=doctor_id)
-                    except ObjectDoesNotExist:
-                        return JsonResponse({'success': False, 'error': 'Wrong doctor id'})
-                    if not doctor.is_doctor:
-                        return JsonResponse({'success': False, 'error': 'User with this id is not a doctor'})
 
                     visit = Visit.objects.create(date=date_time, doctor=doctor)
                     # TODO: check if that visit already exists?
