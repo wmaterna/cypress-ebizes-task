@@ -54,7 +54,7 @@ export default function Navbar() {
                     </Grid>
                 </Toolbar>
             </AppBar>
-            {(token && pathname.startsWith("/dashboard")) && (<Sidebar/>)}
+            {/*{(token && pathname.startsWith("/dashboard")) && (<Sidebar/>)}*/}
         </>
     )
 

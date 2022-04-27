@@ -1,5 +1,6 @@
 import axios from "../config/axios.config";
 import {Doctor} from "../types";
+import {DoctorsVisit} from "../types/doctorsvisit";
 
 // const doctors: Doctor[] = [
 //     {
@@ -26,8 +27,16 @@ const getAllDoctors = (): Promise<Doctor[]> => {
     return axios.get("/doctors").then(res => res.data)   // when backend will work
     // return Promise.resolve(doctors);
 }
+const postDoctorVisit = (doctorVisit: DoctorsVisit) => {
+    return axios.post("/visits/add/", doctorVisit);
+}
 
+// const postVisitInfo = (): Promise<Doctor[]> => {
+//     return axios.post()
+// }
 
 export const doctorsApi = {
     getAllDoctors,
+    postDoctorVisit,
 }
+
