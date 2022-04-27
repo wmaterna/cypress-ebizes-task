@@ -5,8 +5,8 @@ import {
     Typography
 } from "@mui/material";
 import moment, {Moment} from "moment";
-import WeekPicker from "../../components/WeekPicer/WeekPicker";
-import {Doctor, Visit} from "../../types";
+import { format } from 'date-fns';
+import DatePicker from "react-datepicker";
 import {doctorsApi} from "../../api/doctors.api";
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
@@ -15,11 +15,13 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import {DoctorsVisit} from "../../types/doctorsvisit";
+import "react-datepicker/dist/react-datepicker.css";
 
 
 const PlanVisits: React.FC = () => {
-    const [selectedDateFrom, setSelectedDateFrom] = useState<Moment>(moment());
-    const [selectDateTo, setSelectDateTo] = useState<Moment>(moment());
+    const [selectedDateFrom, setSelectedDateFrom] = useState<Date>(new Date(2022,3,17));
+    const [selectDateTo, setSelectDateTo] = useState<Date>(new Date(2022,3,17));
     const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
     const [selectHourForm, setSelectHourFrom] = useState<string>('8:00')
     const [selectHourTo, setSelectHourTo] = useState<string>('18:00');
@@ -46,13 +48,38 @@ const PlanVisits: React.FC = () => {
             setErrorHourFrom(true)
         }
     },[selectHourForm])
-
+console.log(selectedDateFrom.getUTCDate())
      const handleDays = (
             event: React.MouseEvent<HTMLElement>,
             newFormats: string[],
           ) => {
             setDays(newFormats);
     };
+    function padTo2Digits(num: number) {
+      return num.toString().padStart(2, '0');
+    }
+
+    function formatDate(date: Date) {
+              return [
+                date.getFullYear(),
+                padTo2Digits(date.getMonth() + 1),
+                padTo2Digits(date.getDate()),
+              ].join('-');
+        }
+
+    const handleClick = () => {
+        let visit: DoctorsVisit = {
+            dateFrom: formatDate(selectedDateFrom),
+            dateTo: formatDate(selectDateTo),
+            timeFrom: selectHourForm,
+            timeTo: selectHourTo,
+            visitTime: appointmentTime,
+            breakTime: breakTime,
+            repeatEvery: days,
+        }
+        doctorsApi.postDoctorVisit(visit)
+    }
+
 
     return (
         <div style={{width: "68%", marginLeft: "25%", padding: "5%"}}>
@@ -62,11 +89,9 @@ const PlanVisits: React.FC = () => {
 
             <Grid container sx={{marginTop: 5}} gap={5}>
                 <Grid item sm={4}>
-                    <WeekPicker
-                        label="Od"
-                        date={selectedDateFrom}
-                        onChange={e => setSelectedDateFrom(e)}
-                    />
+                    <DatePicker
+                          selected={selectedDateFrom}
+                          onChange={(date: Date) => setSelectedDateFrom(date)} />
                 </Grid>
                 <Grid item sm={4}>
                     <TextField error={errorHourFrom} label="Od godz" value={selectHourForm} onChange={(e: any) => setSelectHourFrom(e.target.value)} />
@@ -74,11 +99,9 @@ const PlanVisits: React.FC = () => {
             </Grid>
             <Grid container sx={{marginTop: 5}} gap={5}>
                 <Grid item sm={4}>
-                        <WeekPicker
-                            label="Do"
-                            date={selectDateTo}
-                            onChange={e => setSelectDateTo(e)}
-                        />
+                    <DatePicker
+                          selected={selectDateTo}
+                          onChange={(date: Date) => setSelectDateTo(date)} />
                 </Grid>
                 <Grid item sm={4}>
                     <TextField error={errorHourTo} label="Do godz" value={selectHourTo} onChange={(e:any) => setSelectHourTo(e.target.value)}/>
@@ -159,6 +182,7 @@ const PlanVisits: React.FC = () => {
                   variant="contained"
                   disabled={errorHourFrom || errorHourTo}
                   size="large"
+                  onClick={handleClick}
                >
                    Zaplanuj wizyty
                </Button>

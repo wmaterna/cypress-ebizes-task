@@ -61,7 +61,7 @@ const ScheduleVisit: React.FC = () => {
         setSelectedVisitId(null)
     }, [selectedDate, doctorId])
 
-    console.log(visits)
+
     const datesMap: DailyVisits[] = useMemo(() => {
         const start = moment(selectedDate).startOf("week");
         const end = moment(selectedDate).endOf("week");
