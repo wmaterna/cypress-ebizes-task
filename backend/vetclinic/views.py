@@ -41,6 +41,7 @@ def register_view(request):
             print('Error: Email exist in database')
             return JsonResponse({'success': False, 'error': 'User already exist'}, status=500)
 
+
 # temporary frontpage as the default one doesn't work
 def frontpage_view(request):
     return HttpResponse('''
@@ -155,9 +156,8 @@ def get_visits_view(request, doctor_id):
 
     if request.method == 'GET':
         try:
-            data = json.loads(request.body)
-            date_from = [int(x) for x in data['from'].split('-')]
-            date_to = [int(x) for x in data['to'].split('-')]
+            date_from = [int(x) for x in request.GET.get("from").split('-')]
+            date_to = [int(x) for x in request.GET.get("to").split('-')]
             # doctor_id = int(data['doctorId'])
         except JSONDecodeError:
             return JsonResponse({'success': False, 'error': 'Invalid body'})
@@ -165,7 +165,7 @@ def get_visits_view(request, doctor_id):
             return JsonResponse({'success': False, 'error': 'Invalid body'})
 
         start_date = datetime.date(date_from[0], date_from[1], date_from[2])
-        end_date = datetime.date(date_to[0], date_to[1], date_to[2] + 1)
+        end_date = datetime.date(date_to[0], date_to[1], date_to[2])
 
         visits = None
         try:
@@ -185,14 +185,22 @@ def get_visits_view(request, doctor_id):
 
         if visits is None:
             visits = Visit.objects.filter(
-                doctor=doctor_id
+                doctor_id=doctor_id
             ).filter(
                 date__gte=start_date
             ).filter(
-                date__lt=end_date
+                date__lte=end_date
             ).filter(
                 animal_id=None
             )
 
         data = list(visits.values())
         return JsonResponse(data, safe=False)
+
+
+@csrf_exempt
+def get_doctors_view(request):
+    if request.method == 'GET':
+        doctors = CustomUser.objects.filter(is_doctor=True)
+
+        return JsonResponse([{'id': x.id, 'name': f'{x.first_name} {x.last_name}'} for x in doctors], safe=False)
