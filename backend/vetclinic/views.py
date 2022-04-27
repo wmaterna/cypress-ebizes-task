@@ -41,6 +41,7 @@ def register_view(request):
             print('Error: Email exist in database')
             return JsonResponse({'success': False, 'error': 'User already exist'}, status=500)
 
+
 # temporary frontpage as the default one doesn't work
 def frontpage_view(request):
     return HttpResponse('''
@@ -137,10 +138,69 @@ def add_visits_view(request):
                     if not doctor.is_doctor:
                         return JsonResponse({'success': False, 'error': 'User with this id is not a doctor'})
 
-                    visit = Visit.objects.create(date=date_time, doctor_id=doctor)
+                    visit = Visit.objects.create(date=date_time, doctor=doctor)
                     # TODO: check if that visit already exists?
                     visit.save()
                     minutes += visit_time + break_time
                 minutes -= 60
 
         return JsonResponse({'success': True})
+
+
+@csrf_exempt
+def get_visits_view(request, doctor_id):
+    try:
+        CustomUser.objects.get(id__exact=doctor_id)
+    except ObjectDoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Wrong doctor id'})
+
+    if request.method == 'GET':
+        try:
+            date_from = [int(x) for x in request.GET.get("from").split('-')]
+            date_to = [int(x) for x in request.GET.get("to").split('-')]
+            # doctor_id = int(data['doctorId'])
+        except JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid body'})
+        except KeyError:
+            return JsonResponse({'success': False, 'error': 'Invalid body'})
+
+        start_date = datetime.date(date_from[0], date_from[1], date_from[2])
+        end_date = datetime.date(date_to[0], date_to[1], date_to[2])
+
+        visits = None
+        try:
+            if request.user.is_doctor:
+                visits = Visit.objects.filter(
+                    doctor=doctor_id
+                ).filter(
+                    date__gte=start_date
+                ).filter(
+                    date__lt=end_date
+                ).exclude(
+                    animal_id=None
+                )
+        # TODO: Only serve logged in users?
+        except AttributeError:
+            pass  # pass this if when user is not authenticated
+
+        if visits is None:
+            visits = Visit.objects.filter(
+                doctor_id=doctor_id
+            ).filter(
+                date__gte=start_date
+            ).filter(
+                date__lte=end_date
+            ).filter(
+                animal_id=None
+            )
+
+        data = list(visits.values())
+        return JsonResponse(data, safe=False)
+
+
+@csrf_exempt
+def get_doctors_view(request):
+    if request.method == 'GET':
+        doctors = CustomUser.objects.filter(is_doctor=True)
+
+        return JsonResponse([{'id': x.id, 'name': f'{x.first_name} {x.last_name}'} for x in doctors], safe=False)
