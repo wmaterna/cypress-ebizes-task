@@ -9,7 +9,7 @@ import json
 from json import JSONDecodeError
 import datetime
 
-from .models import CustomUser, Visit
+from .models import CustomUser, Visit, Species, Animal
 from .forms import LoginForm
 
 
@@ -213,3 +213,9 @@ def get_doctors_view(request):
         doctors = CustomUser.objects.filter(is_doctor=True)
 
         return JsonResponse([{'id': x.id, 'name': f'{x.first_name} {x.last_name}'} for x in doctors], safe=False)
+
+@csrf_exempt
+def get_species_view(request):
+    species = Species.objects.all()
+
+    return JsonResponse(list(species.values()), safe=False)

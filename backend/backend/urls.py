@@ -26,5 +26,6 @@ urlpatterns = [
     path('register/', views.register_view),
     path('visits/add/', views.add_visits_view),
     path('doctors', views.get_doctors_view),
-    path('doctors/<int:doctor_id>/visits', views.get_visits_view)
+    path('doctors/<int:doctor_id>/visits', views.get_visits_view),
+    path('species/', views.get_species_view)
 ]
