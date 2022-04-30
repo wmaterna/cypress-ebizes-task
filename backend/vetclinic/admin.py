@@ -1,7 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser
-from .models import Animal
-from .models import Visit
+from .models import CustomUser, Animal, Visit, Species
 
 
 class VisitAdmin(admin.ModelAdmin):
@@ -17,3 +15,4 @@ class CustomUserAdmin(admin.ModelAdmin):
 admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(Animal)
 admin.site.register(Visit, VisitAdmin)
+admin.site.register(Species)

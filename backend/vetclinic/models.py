@@ -54,9 +54,22 @@ class CustomUser(AbstractUser):
         return self.email
 
 
+class Species(models.Model):
+    name = models.CharField(max_length=150)
+
+    def __str__(self):
+        return self.name
+
+
 # dummy animal model, extend later
 class Animal(models.Model):
     name = models.CharField(max_length=150)
+    species = models.ForeignKey(Species, on_delete=models.CASCADE, null=True)
+    race = models.CharField(max_length=150, null=True)
+    gender = models.CharField(max_length=150, null=True)
+    weight = models.IntegerField(null=True)
+    height = models.IntegerField(null=True)
+    date_of_birth = models.DateTimeField(null=True)
 
 
 class Visit(models.Model):
