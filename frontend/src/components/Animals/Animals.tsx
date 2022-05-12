@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import './Animals.css';
 import {
-    Button, Container,
+    Button,
     Dialog,
     DialogActions,
     DialogContent,
@@ -13,57 +13,61 @@ import {
 } from "@mui/material";
 import PetsIcon from '@mui/icons-material/Pets';
 import Typography from '@mui/material/Typography';
-import axios from "axios";
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import {DesktopDatePicker} from '@mui/x-date-pickers/DesktopDatePicker';
+import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormHelperText from '@mui/material/FormHelperText';
+import Select, {SelectChangeEvent} from '@mui/material/Select';
+import {Pet, PetErrors, Species} from "../../types/animals.types";
+import moment from "moment";
+import {animalsApi} from "../../api/animals";
+import MyAnimalsList from "./MyAnimalsList/MyAnimalsList";
 
 interface props {
 
 }
 
-interface Pet {
-    name: string;
-    species: string;
-    race: string;
-    weight: number;
-    height: number;
-    dateOfBirth: string;
-}
-
-interface PetErrors {
-    name: string;
-    species: string;
-    race: string;
-    weight: string;
-    height: string;
-    dateOfBirth: string;
-}
-
 const Animals: React.FC<props> = () => {
     let newPet: Pet = {
         name: '',
-        species: '',
         race: '',
         weight: 10,
         height: 0,
-        dateOfBirth: ''
     }
 
     let petError: PetErrors = {
         name: '',
         species: '',
-        race: '',
         weight: '',
         height: '',
-        dateOfBirth: ''
     }
 
     const [open, setOpen] = React.useState(false);
+    const [speciesList, setSpeciesList] = useState<Species[]>([]);
     const [formErrors, setFormErrors] = useState(petError);
     const [formValues, setFormValues] = useState(newPet);
+    const [formIsValid, setFormIsValid] = useState(false);
+    const [dateOfBirth, setDateOfBirth] = useState(new Date('2022-01-01T21:11:54'));
+    const [species, setSpecies] = useState('2');
+    const [speciesError, setSpeciesError] = useState(false);
+    const [additionalSpecies, setAdditionalSpecies] = useState('');
+    const [invalidDateOfBirth, setInvalidDateOfBirth] = useState(false);
     const [serverError, setServerError] = useState("");
     const [isSubmit, setIsSubmit] = useState(false);
 
     const handleClickOpen = () => {
         setOpen(true);
+    };
+
+    const handleDateChange = (newDate: Date | null) => {
+        if (newDate && moment(newDate).isValid()) {
+            setDateOfBirth(newDate);
+            setInvalidDateOfBirth(false);
+        } else {
+            setInvalidDateOfBirth(true);
+        }
     };
 
     const handleClose = () => {
@@ -76,19 +80,12 @@ const Animals: React.FC<props> = () => {
         setServerError("")
     }
 
+
     const validate = (values: Pet) => {
         const errors: any = {};
 
         if (!values.name) {
             errors.name = "Podaj imię zwierzęcia!"
-        }
-
-        if (!values.species) {
-            errors.species = "Gatunek jest wymagany!"
-        }
-
-        if (!values.race) {
-            errors.race = "Rasa jest wymagana!"
         }
 
         if (!values.weight) {
@@ -107,30 +104,34 @@ const Animals: React.FC<props> = () => {
             errors.height = "Wzrost nie może być liczbą ujemną!"
         }
 
-        if (!values.dateOfBirth) {
-            errors.dateOfBirth = "Podaj datę urodzenia zwierzęcia!"
-        }
-
         return errors;
     }
 
     const handleSubmit = () => {
         setFormErrors(validate(formValues));
+        setFormIsValid(Object.keys(formErrors).length === 0 && !speciesError && !invalidDateOfBirth)
         setIsSubmit(true);
     };
 
     useEffect(() => {
-        if (Object.keys(formErrors).length === 0 && isSubmit) {
-            addNewPet(formValues).then(() => {
+        animalsApi.getAllSpecies().then(res => setSpeciesList(res));
+    }, [])
+
+    useEffect(() => {
+        if (formIsValid && isSubmit) {
+            animalsApi.addNewPet({
+                ...formValues,
+                species: Number(species),
+                additionalSpecies: additionalSpecies,
+                dateOfBirth: dateOfBirth.toString(),
+            }).then(() => {
                 setOpen(false);
                 setServerError("")
                 setFormValues({
                     name: '',
-                    species: '',
                     race: '',
                     weight: 10,
                     height: 0,
-                    dateOfBirth: '',
                 })
                 setIsSubmit(false);
             }, () => {
@@ -140,9 +141,6 @@ const Animals: React.FC<props> = () => {
         }
     }, [formErrors, isSubmit, formValues]);
 
-    async function addNewPet(newPet: Pet) {
-        return axios.post('/addPet/', newPet);
-    }
 
     return (
         <div style={{width: "68%", marginLeft: "25%", padding: "5%"}}>
@@ -151,7 +149,7 @@ const Animals: React.FC<props> = () => {
                     Moje zwierzęta
                 </Typography>
 
-                <Button variant="contained" startIcon={<PetsIcon/>} onClick={handleClickOpen}>
+                <Button variant="contained" disabled={speciesList.length === 0} startIcon={<PetsIcon/>} onClick={handleClickOpen}>
                     Dodaj zwierzę
                 </Button>
 
@@ -170,7 +168,7 @@ const Animals: React.FC<props> = () => {
                                         name="name"
                                         label="Imię"
                                         type="text"
-                                        variant="standard"
+                                        variant="outlined"
                                         value={formValues.name}
                                         onChange={handleChange}
                                         error={!!formErrors.name}
@@ -181,38 +179,53 @@ const Animals: React.FC<props> = () => {
 
                             <Grid item xs={12} sm={6}>
                                 <FormControl fullWidth>
-                                    <TextField
-                                        fullWidth
-                                        required
-                                        margin="dense"
-                                        id="species"
+                                    <InputLabel id="species">Gatunek</InputLabel>
+                                    <Select
+                                        labelId="species"
+                                        id="species-select"
                                         name="species"
+                                        value={species}
                                         label="Gatunek"
-                                        type="test"
-                                        variant="standard"
-                                        value={formValues.species}
-                                        onChange={handleChange}
-                                        error={!!formErrors.species}
-                                        helperText={formErrors.species}
-                                    />
+                                        error={speciesError}
+                                        onChange={(event: SelectChangeEvent) => {setSpecies(event.target.value as string)}}
+                                    >
+                                        {speciesList.map(({id, name}) => <MenuItem key={id} value={id}>{name}</MenuItem>)}
+
+                                    </Select>
+                                    {speciesError && <FormHelperText error>{formErrors.species}</FormHelperText>}
                                 </FormControl>
                             </Grid>
+
+                            {Number(species) === 1 &&
+                                <Grid item xs={12} sm={6}>
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            fullWidth
+                                            margin="dense"
+                                            id="name"
+                                            name="additionalSpecies"
+                                            label="Możesz podać gatunek, którego nie znalazłeś"
+                                            type="text"
+                                            variant="outlined"
+                                            value={additionalSpecies}
+                                            onChange={(event) => {setAdditionalSpecies(event.target.value as string)}}
+                                        />
+                                    </FormControl>
+                                </Grid>
+                            }
 
                             <Grid item xs={12} sm={6}>
                                 <FormControl fullWidth>
                                     <TextField
                                         fullWidth
-                                        required
                                         margin="dense"
                                         id="race"
                                         name="race"
                                         label="Rasa"
                                         type="text"
-                                        variant="standard"
+                                        variant="outlined"
                                         value={formValues.race}
                                         onChange={handleChange}
-                                        error={!!formErrors.race}
-                                        helperText={formErrors.race}
                                     />
                                 </FormControl>
                             </Grid>
@@ -227,7 +240,7 @@ const Animals: React.FC<props> = () => {
                                         name="weight"
                                         label="Waga zwierzęcia"
                                         type="number"
-                                        variant="standard"
+                                        variant="outlined"
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
@@ -253,7 +266,7 @@ const Animals: React.FC<props> = () => {
                                         name="height"
                                         label="Wzrost zwierzęcia"
                                         type="number"
-                                        variant="standard"
+                                        variant="outlined"
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
@@ -270,22 +283,15 @@ const Animals: React.FC<props> = () => {
                             </Grid>
 
                             <Grid item xs={12} sm={6}>
-                                <FormControl fullWidth>
-                                    <TextField
-                                        fullWidth
-                                        required
-                                        margin="dense"
-                                        id="dateOfBirth"
-                                        name="dateOfBirth"
+                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DesktopDatePicker
                                         label="Data urodzenia"
-                                        type="text"
-                                        variant="standard"
-                                        value={formValues.dateOfBirth}
-                                        onChange={handleChange}
-                                        error={!!formErrors.dateOfBirth}
-                                        helperText={formErrors.dateOfBirth}
+                                        inputFormat="dd/MM/yyyy"
+                                        value={dateOfBirth}
+                                        onChange={handleDateChange}
+                                        renderInput={(params) => <TextField required fullWidth {...params} />}
                                     />
-                                </FormControl>
+                                </LocalizationProvider>
                             </Grid>
                         </Grid>
 
@@ -297,17 +303,13 @@ const Animals: React.FC<props> = () => {
                     </DialogContent>
 
                     <DialogActions>
-                        <Button onClick={handleClose}>ANULUJ</Button>
+                        <Button  onClick={handleClose}>ANULUJ</Button>
                         <Button variant="contained" onClick={handleSubmit}>DODAJ ZWIERZĘ</Button>
                     </DialogActions>
                 </Dialog>
             </div>
 
-            <div className="animals__list">
-                <Typography paragraph gutterBottom component="div">
-                    Dodaj nowego zwierzaka!
-                </Typography>
-            </div>
+            <MyAnimalsList />
         </div>
     )
 }
