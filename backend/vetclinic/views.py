@@ -9,7 +9,7 @@ import json
 from json import JSONDecodeError
 import datetime
 
-from .models import CustomUser, Visit
+from .models import CustomUser, Visit, Species, Animal
 from .forms import LoginForm
 
 
@@ -213,3 +213,13 @@ def get_doctors_view(request):
         doctors = CustomUser.objects.filter(is_doctor=True)
 
         return JsonResponse([{'id': x.id, 'name': f'{x.first_name} {x.last_name}'} for x in doctors], safe=False)
+
+@csrf_exempt
+def get_species_view(request):
+    if request.method == 'GET':
+        species = Species.objects.all()
+
+        if species is None:
+            return JsonResponse({'error': 'Spiecies table is empty'}, status=404)
+
+        return JsonResponse(list(species.values()), safe=False)
