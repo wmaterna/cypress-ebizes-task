@@ -216,6 +216,10 @@ def get_doctors_view(request):
 
 @csrf_exempt
 def get_species_view(request):
-    species = Species.objects.all()
+    if request.method == 'GET':
+        species = Species.objects.all()
 
-    return JsonResponse(list(species.values()), safe=False)
+        if species is None:
+            return JsonResponse({'error': 'Spiecies table is empty'}, status=404)
+
+        return JsonResponse(list(species.values()), safe=False)
