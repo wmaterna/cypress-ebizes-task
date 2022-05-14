@@ -22,7 +22,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
 import {Pet, PetErrors, Species} from "../../types/animals.types";
 import moment from "moment";
-import {animalsApi} from "../../api/animals";
+import {animalsApi} from "../../api/animals.api";
 import MyAnimalsList from "./MyAnimalsList/MyAnimalsList";
 
 interface props {

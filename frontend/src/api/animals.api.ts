@@ -13,6 +13,7 @@ const speciesList: Species[] = [
 
 const userPets: UserPet[] = [
     {
+        id: 1,
         name: 'Bafuś',
         species: 'Pies',
         race: 'Pekińczyk',
@@ -21,6 +22,7 @@ const userPets: UserPet[] = [
         dateOfBirth: '12-12-2021',
     },
     {
+        id: 2,
         name: 'Grzywa',
         species: 'Koń',
         race: '',

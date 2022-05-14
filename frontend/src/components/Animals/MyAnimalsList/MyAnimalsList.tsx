@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import './MyAnimalsList.css';
 import {UserPet} from "../../../types/animals.types";
-import {animalsApi} from "../../../api/animals";
+import {animalsApi} from "../../../api/animals.api";
 import Typography from "@mui/material/Typography";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';

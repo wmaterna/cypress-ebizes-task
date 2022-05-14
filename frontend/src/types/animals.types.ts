@@ -16,6 +16,7 @@ export interface AddNewPet {
 }
 
 export interface UserPet {
+    id: number;
     name: string;
     species: string;
     additionalSpecies?: string;
