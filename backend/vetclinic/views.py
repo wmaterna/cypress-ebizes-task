@@ -24,9 +24,9 @@ def register_view(request):
             email = data['email']
             password = data['password']
         except JSONDecodeError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
+            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
         except KeyError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
+            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
 
         try:
             user = CustomUser.objects.create_user(
@@ -54,7 +54,6 @@ def frontpage_view(request):
 
 @csrf_exempt
 def login_view(request):
-    form = None
     if request.method == 'POST':
         data = json.loads(request.body)
         username = data['email']
@@ -63,17 +62,15 @@ def login_view(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            data = {'success': True}
             print('Login successful')
+            if user.is_doctor:
+                is_doctor = True
+            else:
+                is_doctor = False
+            return JsonResponse({'success': True, 'isDoctor': str(is_doctor)})
         else:
             print('Login failed')
-            data = {'success': False, 'error': 'Username and password combination incorrect'}
-        return JsonResponse(data)
-
-    # TODO: Remove later
-    elif request.method == 'GET':
-        form = LoginForm()
-        return render(request, 'login.html', {'form': form})
+            return JsonResponse({'success': False, 'error': 'Username and password combination incorrect'}, status=401)
 
 
 # TODO: Remove later
@@ -86,7 +83,7 @@ def loggedin_view(request):
 def logout_view(request):
     print('Loging out')
     logout(request)
-    return JsonResponse({'success': True})
+    return HttpResponse(status=200)
 
 
 @csrf_exempt
@@ -119,12 +116,12 @@ def add_visits_view(request):
                 elif repeat[i].lower() == 'sunday':
                     repeat[i] = 6
                 else:
-                    return JsonResponse({'success': False, 'error': 'Invalid weekday'})
+                    return JsonResponse({'success': False, 'error': 'Invalid weekday'}, status=400)
 
         except JSONDecodeError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
+            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
         except KeyError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
+            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
 
         start_date = datetime.date(date_from[0], date_from[1], date_from[2])
         end_date = datetime.date(date_to[0], date_to[1], date_to[2] + 1)
@@ -133,9 +130,9 @@ def add_visits_view(request):
         try:
             doctor = CustomUser.objects.get(id=doctor_id)
         except ObjectDoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Wrong doctor id'})
+            return JsonResponse({'success': False, 'error': 'Wrong doctor id'}, status=400)
         if not doctor.is_doctor:
-            return JsonResponse({'success': False, 'error': 'User with this id is not a doctor'})
+            return JsonResponse({'success': False, 'error': 'User with this id is not a doctor'}, status=400)
 
         for i in range(date_range.days):
             date = start_date + datetime.timedelta(days=i)
@@ -153,7 +150,7 @@ def add_visits_view(request):
                     minutes += visit_time + break_time
                 minutes -= 60
 
-        return JsonResponse({'success': True})
+        return HttpResponse(status=201)
 
 
 @csrf_exempt
@@ -161,7 +158,7 @@ def get_visits_view(request, doctor_id):
     try:
         CustomUser.objects.get(id__exact=doctor_id)
     except ObjectDoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Wrong doctor id'})
+        return JsonResponse({'success': False, 'error': 'Wrong doctor id'}, status=400)
 
     if request.method == 'GET':
         try:
@@ -169,9 +166,9 @@ def get_visits_view(request, doctor_id):
             date_to = [int(x) for x in request.GET.get("to").split('-')]
             # doctor_id = int(data['doctorId'])
         except JSONDecodeError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
+            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
         except KeyError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
+            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
 
         start_date = datetime.date(date_from[0], date_from[1], date_from[2])
         end_date = datetime.date(date_to[0], date_to[1], date_to[2])
@@ -220,6 +217,6 @@ def get_species_view(request):
         species = Species.objects.all()
 
         if species is None:
-            return JsonResponse({'error': 'Spiecies table is empty'}, status=404)
+            return JsonResponse({'success': False, 'error': 'Spiecies table is empty'}, status=404)
 
         return JsonResponse(list(species.values()), safe=False)
