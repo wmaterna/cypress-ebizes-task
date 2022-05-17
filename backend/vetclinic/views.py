@@ -144,9 +144,23 @@ def add_visits_view(request):
                     date_time = datetime.datetime(year=date.year, month=date.month, day=date.day,
                                                   hour=hour, minute=minutes)
 
-                    visit = Visit.objects.create(date=date_time, doctor=doctor)
-                    # TODO: check if that visit already exists?
-                    visit.save()
+                    visit_window = datetime.datetime(year=date.year, month=date.month, day=date.day,
+                                                     hour=hour + 1, minute=visit_time + break_time)
+
+                    visit = Visit.objects.filter(
+                        doctor_id=doctor_id
+                    ).filter(
+                        date__gte=date_time
+                    ).filter(
+                        date__lte=visit_window
+                    )
+
+                    if not visit:
+                        visit = Visit.objects.create(date=date_time, doctor=doctor)
+                        visit.save()
+                    else:
+                        print(f'Skipping {date_time}')
+
                     minutes += visit_time + break_time
                 minutes -= 60
 
