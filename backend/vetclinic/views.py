@@ -1,4 +1,6 @@
+from django.conf.global_settings import EMAIL_HOST_USER
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import send_mail
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse
@@ -9,11 +11,13 @@ import json
 from json import JSONDecodeError
 import datetime
 
-from .models import CustomUser, Visit, Species, Animal
+from .models import CustomUser, Visit
 from .forms import LoginForm
 
 
 # Create your views here.
+
+
 @csrf_exempt
 def register_view(request):
     if request.method == 'POST':
@@ -24,9 +28,9 @@ def register_view(request):
             email = data['email']
             password = data['password']
         except JSONDecodeError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
+            return JsonResponse({'success': False, 'error': 'Invalid body'})
         except KeyError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
+            return JsonResponse({'success': False, 'error': 'Invalid body'})
 
         try:
             user = CustomUser.objects.create_user(
@@ -54,6 +58,7 @@ def frontpage_view(request):
 
 @csrf_exempt
 def login_view(request):
+    form = None
     if request.method == 'POST':
         data = json.loads(request.body)
         username = data['email']
@@ -62,15 +67,17 @@ def login_view(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
+            data = {'success': True}
             print('Login successful')
-            if user.is_doctor:
-                is_doctor = True
-            else:
-                is_doctor = False
-            return JsonResponse({'success': True, 'isDoctor': str(is_doctor)})
         else:
             print('Login failed')
-            return JsonResponse({'success': False, 'error': 'Username and password combination incorrect'}, status=401)
+            data = {'success': False, 'error': 'Username and password combination incorrect'}
+        return JsonResponse(data)
+
+    # TODO: Remove later
+    elif request.method == 'GET':
+        form = LoginForm()
+        return render(request, 'login.html', {'form': form})
 
 
 # TODO: Remove later
@@ -83,7 +90,7 @@ def loggedin_view(request):
 def logout_view(request):
     print('Loging out')
     logout(request)
-    return HttpResponse(status=200)
+    return JsonResponse({'success': True})
 
 
 @csrf_exempt
@@ -116,12 +123,12 @@ def add_visits_view(request):
                 elif repeat[i].lower() == 'sunday':
                     repeat[i] = 6
                 else:
-                    return JsonResponse({'success': False, 'error': 'Invalid weekday'}, status=400)
+                    return JsonResponse({'success': False, 'error': 'Invalid weekday'})
 
         except JSONDecodeError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
+            return JsonResponse({'success': False, 'error': 'Invalid body'})
         except KeyError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
+            return JsonResponse({'success': False, 'error': 'Invalid body'})
 
         start_date = datetime.date(date_from[0], date_from[1], date_from[2])
         end_date = datetime.date(date_to[0], date_to[1], date_to[2] + 1)
@@ -130,9 +137,9 @@ def add_visits_view(request):
         try:
             doctor = CustomUser.objects.get(id=doctor_id)
         except ObjectDoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Wrong doctor id'}, status=400)
+            return JsonResponse({'success': False, 'error': 'Wrong doctor id'})
         if not doctor.is_doctor:
-            return JsonResponse({'success': False, 'error': 'User with this id is not a doctor'}, status=400)
+            return JsonResponse({'success': False, 'error': 'User with this id is not a doctor'})
 
         for i in range(date_range.days):
             date = start_date + datetime.timedelta(days=i)
@@ -150,7 +157,7 @@ def add_visits_view(request):
                     minutes += visit_time + break_time
                 minutes -= 60
 
-        return HttpResponse(status=201)
+        return JsonResponse({'success': True})
 
 
 @csrf_exempt
@@ -158,7 +165,7 @@ def get_visits_view(request, doctor_id):
     try:
         CustomUser.objects.get(id__exact=doctor_id)
     except ObjectDoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Wrong doctor id'}, status=400)
+        return JsonResponse({'success': False, 'error': 'Wrong doctor id'})
 
     if request.method == 'GET':
         try:
@@ -166,9 +173,9 @@ def get_visits_view(request, doctor_id):
             date_to = [int(x) for x in request.GET.get("to").split('-')]
             # doctor_id = int(data['doctorId'])
         except JSONDecodeError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
+            return JsonResponse({'success': False, 'error': 'Invalid body'})
         except KeyError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
+            return JsonResponse({'success': False, 'error': 'Invalid body'})
 
         start_date = datetime.date(date_from[0], date_from[1], date_from[2])
         end_date = datetime.date(date_to[0], date_to[1], date_to[2])
@@ -211,12 +218,19 @@ def get_doctors_view(request):
 
         return JsonResponse([{'id': x.id, 'name': f'{x.first_name} {x.last_name}'} for x in doctors], safe=False)
 
-@csrf_exempt
-def get_species_view(request):
-    if request.method == 'GET':
-        species = Species.objects.all()
 
-        if species is None:
-            return JsonResponse({'success': False, 'error': 'Spiecies table is empty'}, status=404)
+def send_email(receiver):
+    subject = "Odłowanie wizyty"
+    message = """Poniższa wiadomość została wygenerowana automatycznie. 
+                            Prosimy na nią nie odpowiadać.
 
-        return JsonResponse(list(species.values()), safe=False)
+                 Witaj,
+
+                 Informujemy o anulowaniu wizyty!
+
+                 Pozdrawiamy
+                 Zespół VetClinic"""
+    sender = EMAIL_HOST_USER
+    receiver = list(receiver)
+    fail_silently = False
+    return send_mail(subject, message, sender, receiver, fail_silently)

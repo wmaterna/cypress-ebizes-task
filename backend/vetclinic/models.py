@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
+from django.dispatch import receiver
+
+from .views import send_email
 
 
 class CustomUserManager(BaseUserManager):
@@ -8,6 +11,7 @@ class CustomUserManager(BaseUserManager):
     Custom user model manager where email is the unique identifiers
     for authentication instead of usernames.
     """
+
     def create_user(self, email, password, **extra_fields):
         """
         Create and save a User with the given email and password.
@@ -80,3 +84,10 @@ class Visit(models.Model):
 
     def __str__(self):
         return f'{self.doctor.email} {self.date}'
+
+
+# trzeba otrzymac email uzytkownika a nie doktora
+@receiver(models.signals.post_delete, sender=Visit)
+def email_post_delete(sender, instance, *args, **kwargs):
+    if instance.doctor.email:
+        send_email(receiver=Visit.doctor.email)
