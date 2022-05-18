@@ -63,7 +63,8 @@ export default function SignIn() {
         if (isSubmit) {
             loginUser(formValues).then((res) => {
                     if (res.data.success) {
-                        logIn(res.data.success.toString())
+
+                        logIn(res.data.success.toString(), res.data.isDoctor.toString())
                         navigate("/dashboard/animals");
                     } else {
                         // setToken(res.data.success);

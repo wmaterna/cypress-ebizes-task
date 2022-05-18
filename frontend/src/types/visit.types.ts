@@ -4,11 +4,16 @@ export interface Visit {
     id: number,
     date: Moment,
     doctorId: number,
-    animalId?: number,
+    animal: Animal,
     note?: string
 }
 
 export interface DailyVisits {
     date: Moment;
     visits: Visit[];
+}
+
+
+export interface Animal {
+    name: string
 }

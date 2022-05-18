@@ -49,8 +49,34 @@ const getVisits = (doctorId: number, from: Moment, to: Moment): Promise<Visit[]>
 }
 
 
+const getVisitsDoctor = (from: Moment): Promise<Visit[]> => {
+    return axios.get<VisitResponse[]>(`/visits`, {        // call to api
+        params: {
+            date: from.format(DATE_FORMAT)
+        }
+    })
+        .then((res) => res.data)
+        .then((res) => res.map(v => ({
+            ...v,
+            date: moment(v.date)
+        })))
+
+
+    // Generator
+    // const result = [];
+    // let id = 0;
+    // let idx = 0
+    // for (let d = moment(from); d.isSameOrBefore(to); d.add(1, "days"), id += 10, idx++) {
+    //     if (idx != 2)
+    //         result.push(...generateVisits(moment(d).add(12, "hours").format("YYYY-MM-DD"), doctorId, id))
+    // }
+    //
+    // return Promise.resolve(result)
+}
+
+
 
 
 export const visitsApi = {
-    getVisits,
+    getVisits, getVisitsDoctor,
 }

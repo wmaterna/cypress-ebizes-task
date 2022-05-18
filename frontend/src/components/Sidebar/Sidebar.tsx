@@ -6,8 +6,7 @@ import ScheduleIcon from '@mui/icons-material/Schedule';
 import { Drawer, List, ListItem, ListItemIcon, ListItemText, MenuItem, MenuList, useTheme } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {useNavigate, useLocation} from "react-router";
-import { NavLink } from "react-router-dom";
-import { UserContext } from "../../context/UserContext";
+import Divider from '@mui/material/Divider';
 
 type Sidebarprops = {
     token: string | null,
@@ -18,11 +17,10 @@ const Sidebar: React.FC<Sidebarprops> = ({token}) => {
     const theme = useTheme();
 
     const {pathname} = useLocation();
-    // Na razie, potem udostępnie przez kontekts
-    const isDoctor = true;
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [isDoctor, setIsDoctor] = useState(localStorage.getItem("isDoctor") ==="True");
 
-
+console.log(isDoctor, localStorage.getItem("isDoctor"));
     const handleClick = (link: string) => {
         navigate(link);
     }
@@ -47,7 +45,11 @@ const Sidebar: React.FC<Sidebarprops> = ({token}) => {
             }}
         >
             <MenuList>
-                <MenuItem onClick={() => handleClick("/dashboard/animals")}>
+                <MenuItem>
+                    {isDoctor ? <span>Doctor's profile</span> : <span>User's profile</span>}
+                </MenuItem>
+                 <Divider />
+                <MenuItem onClick={ isDoctor ? () => handleClick("/dashboard/doc-timetable") : () => handleClick("/dashboard/animals")}>
                     <ListItemIcon>
                         <PetsIcon fontSize="small"/>
                     </ListItemIcon>
@@ -59,18 +61,19 @@ const Sidebar: React.FC<Sidebarprops> = ({token}) => {
                             }
                     </Typography>
                 </MenuItem>
-                <MenuItem onClick={() => handleClick("/dashboard/scheduleVisit")}>
+                <MenuItem onClick={isDoctor ? () => handleClick("dashboard/doc-addVisits") : () => handleClick("/dashboard/scheduleVisit")}>
                     <ListItemIcon>
                         <CalendarMonthIcon fontSize="small"/>
                     </ListItemIcon>
-                    <Typography variant="inherit">{
+                    <Typography variant="inherit">
+                        {
                         isDoctor ?
                             <>Dodaj spotkania</>
                             :
                             <>Moje wizyty</>
                     }</Typography>
                 </MenuItem>
-                <MenuItem onClick={() => handleClick("/dashboard/history")}>
+                <MenuItem onClick={isDoctor ? () => handleClick("/dashboard/doc-history") : () => handleClick("/dashboard/history")}>
                     <ListItemIcon>
                         <ScheduleIcon fontSize="small"/>
                     </ListItemIcon>

@@ -10,7 +10,8 @@ import AppContextProvider from "./context";
 import { UserContext } from "./context/UserContext";
 import Sidebar from "./components/Sidebar/Sidebar";
 import ScheduleVisit from "./screens/ScheduleVisit";
-import PlanVisits from "./screens/doctors-screens/PlanVisits";
+import DoctorsTimetable from "./screens/doctors-screens/Timetable/DoctorsTimetable";
+import PlanVisits from "./screens/doctors-screens/PlanVisits/PlanVisits";
 
 import "moment/locale/pl"
 import moment from "moment";
@@ -36,6 +37,7 @@ const App: React.FC = () => {
                                     <Route path="/dashboard/animals" element={<Animals/>}/>
                                     <Route path="/dashboard/scheduleVisit" element={<ScheduleVisit/>}/>
                                     <Route path="/dashboard/doc-addVisits" element={<PlanVisits/>} />
+                                    <Route path="/dashboard/doc-timetable" element={<DoctorsTimetable/>} />
                                 </Route>
                             )}
 
