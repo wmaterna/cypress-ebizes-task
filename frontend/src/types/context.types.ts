@@ -1,7 +1,7 @@
 
 export interface UserContextState {
 	token: string | null;
-	// isDoctor: boolean;  <- future??
-	logIn: (token: string) => void;
+	isDoctor: string | null;
+	logIn: (token: string, isDoctor: string) => void;
 	logOut: () => void;
 }

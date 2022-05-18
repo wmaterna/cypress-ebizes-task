@@ -9,10 +9,8 @@ import {Grid} from "@mui/material";
 
 
 interface CardInfo{
-    date: string,
+    visit_date: string,
     petName: string,
-    ownerName: string,
-    room: string,
 }
 const bull = (
   <Box
@@ -35,16 +33,16 @@ const VisitsCard: (props: CardInfo) => JSX.Element = (props: CardInfo) => {
                     >
                       <Grid item xs={10}>
                           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                              {props.date}
+                              {props.visit_date}
                           </Typography>
                           <Typography variant="h5" component="div">
                               <b>{props.petName}</b>
                           </Typography>
                           <Typography sx={{ mb: 1.5 }} color="text.secondary">
-                              {props.ownerName}
+
                           </Typography>
                           <Typography variant="body2">
-                              <b>Room No: </b>{props.room}
+                              <b>Room No: </b>23
                           </Typography>
                       </Grid>
                       <Grid item xs={2}>

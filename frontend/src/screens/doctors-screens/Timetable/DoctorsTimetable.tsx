@@ -11,7 +11,7 @@ import moment, {Moment} from "moment";
 
 const DoctorsTimetable: React.FC = () => {
 
-    const [date, setDate] = useState<Date>(new Date(2022,3,17));
+    const [date, setDate] = useState<Date>();
     const [doctors, setDoctors] = useState<Doctor[]>([]);
     const [visits, setVisits] = useState<Visit[]>([])
     const [doctorId, setDoctorId] = useState<number | "">(0);
@@ -19,11 +19,9 @@ const DoctorsTimetable: React.FC = () => {
 
 
     useEffect(() => {
-        if (doctorId !== "") {
             visitsApi
-                .getVisits(doctorId, moment(date).startOf("week"), moment(date).endOf("week"))
+                .getVisitsDoctor(moment(date))
                 .then(res => setVisits(res));
-        }
     }, [date])
 
     return (
@@ -41,7 +39,16 @@ const DoctorsTimetable: React.FC = () => {
                           onChange={(e: Date) => setDate(e)} />
                 </Grid>
            </Grid>
-            <VisitsCard date="23-03-2000" petName="Saba" room="23" ownerName="Anna Kozłowska"/>
+            {visits.length !== 0 &&
+                <>
+                    {visits.map((visit) => {
+                        return (
+                             <VisitsCard visit_date={visit.date.toString()} petName={visit.animal.name}/>
+                        )
+                        })
+                    }
+                </>
+            }
 
         </div>
     )
