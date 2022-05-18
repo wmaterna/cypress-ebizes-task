@@ -47,7 +47,7 @@ const VisitsCard: (props: CardInfo) => JSX.Element = (props: CardInfo) => {
                       </Grid>
                       <Grid item xs={2}>
                         <CardActions>
-                          <Button size="small">Cancel Visit</Button>
+                          {/*<Button size="small">Cancel Visit</Button>*/}
                         </CardActions>
                       </Grid>
                   </Grid>
