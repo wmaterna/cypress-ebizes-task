@@ -2,8 +2,8 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
 from django.dispatch import receiver
-
-from .views import send_email
+from django.conf.global_settings import EMAIL_HOST_USER
+from django.core.mail import send_mail
 
 
 class CustomUserManager(BaseUserManager):
@@ -90,4 +90,19 @@ class Visit(models.Model):
 @receiver(models.signals.post_delete, sender=Visit)
 def email_post_delete(sender, instance, *args, **kwargs):
     if instance.doctor.email:
-        send_email(receiver=Visit.doctor.email)
+        subject = "Odłowanie wizyty"
+        message = """Poniższa wiadomość została wygenerowana automatycznie. 
+                                    Prosimy na nią nie odpowiadać.
+
+                         Witaj,
+
+                         Informujemy o anulowaniu wizyty!
+
+                         Pozdrawiamy
+                         Zespół VetClinic"""
+        sender = EMAIL_HOST_USER
+        receiver = list(Visit.doctor.email)
+        fail_silently = False
+        return send_mail(subject, message, sender, receiver, fail_silently)
+
+
