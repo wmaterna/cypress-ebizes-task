@@ -7,7 +7,7 @@ import {
 import moment, {Moment} from "moment";
 import { format } from 'date-fns';
 import DatePicker from "react-datepicker";
-import {doctorsApi} from "../../api/doctors.api";
+import {doctorsApi} from "../../../api/doctors.api";
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -15,8 +15,9 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import {DoctorsVisit} from "../../types/doctorsvisit";
+import {DoctorsVisit} from "../../../types/doctorsvisit";
 import "react-datepicker/dist/react-datepicker.css";
+import "./PlanVisits.css";
 
 
 const PlanVisits: React.FC = () => {
@@ -90,21 +91,24 @@ console.log(selectedDateFrom.getUTCDate())
             <Grid container sx={{marginTop: 5}} gap={5}>
                 <Grid item sm={4}>
                     <DatePicker
+                        wrapperClassName="datePicker"
                           selected={selectedDateFrom}
                           onChange={(date: Date) => setSelectedDateFrom(date)} />
                 </Grid>
                 <Grid item sm={4}>
-                    <TextField error={errorHourFrom} label="Od godz" value={selectHourForm} onChange={(e: any) => setSelectHourFrom(e.target.value)} />
+                    <TextField style={{width: "100%"}} error={errorHourFrom} label="Od godz" value={selectHourForm} onChange={(e: any) => setSelectHourFrom(e.target.value)} />
+
                 </Grid>
             </Grid>
             <Grid container sx={{marginTop: 5}} gap={5}>
                 <Grid item sm={4}>
                     <DatePicker
+                        wrapperClassName="datePicker"
                           selected={selectDateTo}
                           onChange={(date: Date) => setSelectDateTo(date)} />
                 </Grid>
                 <Grid item sm={4}>
-                    <TextField error={errorHourTo} label="Do godz" value={selectHourTo} onChange={(e:any) => setSelectHourTo(e.target.value)}/>
+                    <TextField style={{width: "100%"}} error={errorHourTo} label="Do godz" value={selectHourTo} onChange={(e:any) => setSelectHourTo(e.target.value)}/>
                 </Grid>
             </Grid>
                 <Grid container sx={{marginTop: 5}} gap={5}>
@@ -180,7 +184,7 @@ console.log(selectedDateFrom.getUTCDate())
             <Grid container sx={{marginTop: 5}} gap={5}>
                <Button
                   variant="contained"
-                  disabled={errorHourFrom || errorHourTo}
+                  disabled={errorHourFrom || errorHourTo || days.length === 0}
                   size="large"
                   onClick={handleClick}
                >

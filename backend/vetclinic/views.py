@@ -68,7 +68,7 @@ def login_view(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            data = {'success': True}
+            data = {'success': True, "isDoctor": "True" if user.is_doctor else "False"}
             print('Login successful')
         else:
             print('Login failed')
