@@ -1,6 +1,6 @@
-from django.conf.global_settings import EMAIL_HOST_USER
+from __future__ import annotations
+
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import send_mail
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, JsonResponse
@@ -10,8 +10,9 @@ from django.db import IntegrityError
 import json
 from json import JSONDecodeError
 import datetime
+from datetime import date
 
-from .models import CustomUser, Visit
+from .models import CustomUser, Visit, Animal
 from .forms import LoginForm
 
 
@@ -219,18 +220,50 @@ def get_doctors_view(request):
         return JsonResponse([{'id': x.id, 'name': f'{x.first_name} {x.last_name}'} for x in doctors], safe=False)
 
 
-def send_email(receiver):
-    subject = "Odłowanie wizyty"
-    message = """Poniższa wiadomość została wygenerowana automatycznie. 
-                            Prosimy na nią nie odpowiadać.
+@csrf_exempt
+def add_animal_view(request):
+    if request.method == "POST":
+        try:
+            print(request.body)
+            body = json.loads(request.body)
 
-                 Witaj,
+            res = check_if_all_not_none(body, ["name", "weight", "height", "dateOfBirth"])
+            if type(res) is str:
+                return JsonResponse({"message": res}, status=400)
 
-                 Informujemy o anulowaniu wizyty!
+            animal = Animal.objects.create(
+                name=body["name"],
+                weight=float(body["weight"]),
+                height=float(body["height"]),
+            )
+            print(type(body))
 
-                 Pozdrawiamy
-                 Zespół VetClinic"""
-    sender = EMAIL_HOST_USER
-    receiver = list(receiver)
-    fail_silently = False
-    return send_mail(subject, message, sender, receiver, fail_silently)
+            if is_none(body, "speciesId"):
+                animal.species_id = int(body["speciesId"])
+
+            if is_none(body, "race"):
+                animal.race = body["race"]
+
+            if is_none(body, "dateOfBirth"):
+                animal.date_of_birth = date(*map(int, body["dateOfBirth"].split('-')))
+
+            animal.save()
+            return JsonResponse({"message": "Created"}, status=201)
+        except JSONDecodeError:
+            return JsonResponse({"message": "Invalid body"}, status=400)
+
+
+def check_if_all_not_none(body, fields) -> str | bool:
+    for x in fields:
+        try:
+            if body[x] is None:
+                return f"Required field is empty: {x}"
+        except KeyError:
+            return f"Missing required field: {x}"
+
+    return True
+
+
+def is_none(dict, field):
+    return True if field in dict.keys() and dict[field] is not None else False
+
