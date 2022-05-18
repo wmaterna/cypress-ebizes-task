@@ -211,6 +211,38 @@ def get_visits_view(request, doctor_id):
         data = list(visits.values())
         return JsonResponse(data, safe=False)
 
+@csrf_exempt
+def get_scheduled_visits_view(request):
+    if request.method == 'GET':
+
+        if not request.user.is_doctor:
+            JsonResponse({"Message": "You are not a doctor"}, status=403)
+
+        try:
+            date = datetime.date(*map(int, request.GET.get("date").split('-')))
+
+        except JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid body'})
+        except KeyError:
+            return JsonResponse({'success': False, 'error': 'Invalid body'})
+
+        visits = Visit.objects.select_related("animal")\
+            .filter(doctor=request.user.id)\
+            .filter(date__range=[date, date + datetime.timedelta(days=1)])\
+            .exclude(animal_id=None)\
+            .values()
+
+        visits = list(visits)
+        animal_ids = [x["animal_id"] for x in visits]
+
+        animals = list(Animal.objects.filter(pk__in=animal_ids).values())
+
+        for v in visits:
+            v["animal"] = find_animal(animals, v["animal_id"])
+
+        # for x in data:
+        #     print(x.animal)
+        return JsonResponse(visits, safe=False)
 
 @csrf_exempt
 def get_doctors_view(request):
@@ -267,3 +299,8 @@ def check_if_all_not_none(body, fields) -> str | bool:
 def is_none(dict, field):
     return True if field in dict.keys() and dict[field] is not None else False
 
+def find_animal(list, id):
+    for x in list:
+        if x["id"] == id: return x
+
+    return None
