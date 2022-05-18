@@ -5,7 +5,7 @@ import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import SignUp from "./components/SignUp/SignUp";
 import SignIn from "./components/SignIn/SignIn";
 import HelloComponent from "./components/hello_component/Hello_Component";
-import Animals from "./components/Animals/Animals";
+import Animals from "./components/animals/Animals";
 import AppContextProvider from "./context";
 import { UserContext } from "./context/UserContext";
 import Sidebar from "./components/Sidebar/Sidebar";

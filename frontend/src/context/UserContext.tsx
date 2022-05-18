@@ -17,7 +17,7 @@ export const UserContext = React.createContext<UserContextState>({
 export const UserContextProvider: React.FC<{children: ReactElement}> = ({children}) => {
 	const [token, setToken] = useState<string | null>(getTokenFromStorage)
 
-	const logIn = (token: string) => {
+	const logIn = (token: string, isDoctor: boolean) => {
 		localStorage.setItem("token", token);
 		setToken(token);
 	}
