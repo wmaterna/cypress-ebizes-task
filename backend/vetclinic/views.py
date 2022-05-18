@@ -267,3 +267,14 @@ def check_if_all_not_none(body, fields) -> str | bool:
 def is_none(dict, field):
     return True if field in dict.keys() and dict[field] is not None else False
 
+
+@csrf_exempt
+def get_animal_view(request, user_id):
+    try:
+        CustomUser.objects.get(id__exact=user_id)
+    except ObjectDoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Wrong user id'})
+
+    if request.method == 'GET':
+        user_animals = Animal.user_id.objects
+        return JsonResponse([{'id': x.id, 'name': x.name, 'parameters': f'{x.weight} {x.height}'} for x in user_animals], safe=False)

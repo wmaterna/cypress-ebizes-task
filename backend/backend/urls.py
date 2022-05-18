@@ -19,14 +19,15 @@ from vetclinic import views
 
 urlpatterns = [
     path('', views.frontpage_view),
-    path('admin', admin.site.urls),
-    path('login', views.login_view),
+    path('admin/', admin.site.urls),
+    path('login/', views.login_view),
     path('login/members/', views.loggedin_view),
-    path('logout', views.logout_view),
-    path('register', views.register_view),
-    path('visits/add', views.add_visits_view),
-    path('doctors', views.get_doctors_view),
-    path('doctors/<int:doctor_id>/visits', views.get_visits_view),
-    path('pets', views.add_animal_view)
+    path('logout/', views.logout_view),
+    path('register/', views.register_view),
+    path('visits/add/', views.add_visits_view),
+    path('doctors/', views.get_doctors_view),
+    path('doctors/<int:doctor_id>/visits/', views.get_visits_view),
+    path('pets/', views.add_animal_view),
+    path('pets/<int:user_id>/', views.get_animal_view),
     # path('species/', views.get_species_view)
 ]
