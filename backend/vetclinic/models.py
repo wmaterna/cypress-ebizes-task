@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.base_user import BaseUserManager
+from django.dispatch import receiver
+from django.conf.global_settings import EMAIL_HOST_USER
+from django.core.mail import send_mail
 
 
 class CustomUserManager(BaseUserManager):
@@ -8,6 +11,7 @@ class CustomUserManager(BaseUserManager):
     Custom user model manager where email is the unique identifiers
     for authentication instead of usernames.
     """
+
     def create_user(self, email, password, **extra_fields):
         """
         Create and save a User with the given email and password.
@@ -80,3 +84,25 @@ class Visit(models.Model):
 
     def __str__(self):
         return f'{self.doctor.email} {self.date}'
+
+
+# trzeba otrzymac email uzytkownika a nie doktora
+@receiver(models.signals.post_delete, sender=Visit)
+def email_post_delete(sender, instance, *args, **kwargs):
+    if instance.doctor.email:
+        subject = "Odłowanie wizyty"
+        message = """Poniższa wiadomość została wygenerowana automatycznie. 
+                                    Prosimy na nią nie odpowiadać.
+
+                         Witaj,
+
+                         Informujemy o anulowaniu wizyty!
+
+                         Pozdrawiamy
+                         Zespół VetClinic"""
+        sender = EMAIL_HOST_USER
+        receiver = list(Visit.doctor.email)
+        fail_silently = False
+        return send_mail(subject, message, sender, receiver, fail_silently)
+
+
