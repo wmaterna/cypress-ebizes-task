@@ -225,6 +225,7 @@ def get_doctors_view(request):
 
         return JsonResponse([{'id': x.id, 'name': f'{x.first_name} {x.last_name}'} for x in doctors], safe=False)
 
+
 @csrf_exempt
 def get_species_view(request):
     if request.method == 'GET':
