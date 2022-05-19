@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
@@ -309,13 +310,9 @@ def find_animal(list, id):
     return None
 
 
+@login_required
 @csrf_exempt
-def get_animal_view(request, user_id):
-    try:
-        CustomUser.objects.get(id__exact=user_id)
-    except ObjectDoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Wrong user id'})
-
+def get_animal_view(request):
     if request.method == 'GET':
-        user_animals = Animal.user_id.objects
+        user_animals = Animal.objects.all()
         return JsonResponse([{'id': x.id, 'name': x.name, 'parameters': f'{x.weight} {x.height}'} for x in user_animals], safe=False)
