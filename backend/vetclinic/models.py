@@ -74,6 +74,10 @@ class Animal(models.Model):
     weight = models.IntegerField(null=True)
     height = models.IntegerField(null=True)
     date_of_birth = models.DateTimeField(null=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return f"{self.id} - {self.name}"
 
 
 class Visit(models.Model):
@@ -101,7 +105,8 @@ def email_post_delete(sender, instance, *args, **kwargs):
                          Pozdrawiamy
                          Zespół VetClinic"""
         sender = EMAIL_HOST_USER
-        receiver = list(Visit.doctor.email)
+
+        receiver = list([instance.doctor.email])
         fail_silently = False
         return send_mail(subject, message, sender, receiver, fail_silently)
 
