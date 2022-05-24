@@ -18,7 +18,7 @@ const Sidebar: React.FC<Sidebarprops> = ({token}) => {
 
     const {pathname} = useLocation();
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [isDoctor, setIsDoctor] = useState(localStorage.getItem("isDoctor") ==="True");
+    const [isDoctor, setIsDoctor] = useState(localStorage.getItem("isDoctor") =='True');
 
 console.log(isDoctor, localStorage.getItem("isDoctor"));
     const handleClick = (link: string) => {

@@ -26,6 +26,18 @@ export interface UserPet {
     dateOfBirth: string;
 }
 
+export interface PetVisits {
+    id: number;
+    date: string;
+    doctorId: number;
+    animal: {
+        id: number,
+        name: string
+        };
+    note: string;
+}
+
+
 
 export interface PetErrors {
     name: string;
