@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
 
@@ -230,35 +230,44 @@ def get_visits_view(request, doctor_id):
 @csrf_exempt
 def get_scheduled_visits_view(request):
     if request.method == 'GET':
+        if request.user.is_doctor:
+            try:
+                date = datetime.date(*map(int, request.GET.get("date", default=str(datetime.date.today())).split('-')))
 
-        if not request.user.is_doctor:
-            JsonResponse({"Message": "You are not a doctor"}, status=403)
+            except JSONDecodeError:
+                return JsonResponse({'error': 'Invalid body'}, status=400)
+            except KeyError:
+                return JsonResponse({'error': 'Invalid body'}, status=400)
 
-        try:
-            date = datetime.date(*map(int, request.GET.get("date").split('-')))
+            visits = Visit.objects.select_related("animal") \
+                .filter(doctor=request.user.id) \
+                .filter(date__range=[date, date + datetime.timedelta(days=1)]) \
+                .exclude(animal_id=None) \
+                .values()
 
-        except JSONDecodeError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
-        except KeyError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
+            visits = list(visits)
+            animal_ids = [x["animal_id"] for x in visits]
 
-        visits = Visit.objects.select_related("animal")\
-            .filter(doctor=request.user.id)\
-            .filter(date__range=[date, date + datetime.timedelta(days=1)])\
-            .exclude(animal_id=None)\
-            .values()
+            animals = list(Animal.objects.filter(pk__in=animal_ids).values())
 
-        visits = list(visits)
-        animal_ids = [x["animal_id"] for x in visits]
+            for v in visits:
+                v["animal"] = find_animal(animals, v["animal_id"])
 
-        animals = list(Animal.objects.filter(pk__in=animal_ids).values())
+            return JsonResponse(visits, safe=False)
+        else:
+            animals = list(Animal.objects.filter(user=request.user).values())
+            visits = Visit.objects.select_related("animal")\
+                .filter(animal__in=[x["id"] for x in animals])\
+                .filter(date__gte=datetime.date.today())\
+                .values()
 
-        for v in visits:
-            v["animal"] = find_animal(animals, v["animal_id"])
+            visits = list(visits)
 
-        # for x in data:
-        #     print(x.animal)
-        return JsonResponse(visits, safe=False)
+            for v in visits:
+                v["animal"] = find_animal(animals, v["animal_id"])
+            return JsonResponse(list(visits), safe=False, status=403)
+
+
 
 
 @csrf_exempt
@@ -300,6 +309,36 @@ def add_animal_view(request):
             return JsonResponse({"message": "Created"}, status=201)
         except JSONDecodeError:
             return JsonResponse({"message": "Invalid body"}, status=400)
+
+
+@csrf_exempt
+def edit_visit_view(request: HttpRequest, visit_id: int) -> JsonResponse:
+    if request.method == "PUT":
+        try:
+            animalId = json.loads(request.body)["petId"]
+
+            visit = Visit.objects.get(pk=visit_id)
+
+            if visit.animal is not None:
+                return JsonResponse({"error": "Visit is already booked"}, status=400)
+
+            visit.animal_id = animalId
+            visit.save()
+
+            return JsonResponse({"status": "Booked"}, status=200)
+        except KeyError as e:
+            return JsonResponse({"error": "Missing required field: petId"}, status=400)
+
+    elif request.method == "DELETE":
+        if request.user.is_doctor:
+            Visit.objects.filter(id=visit_id).delete()
+            return JsonResponse({"status": "Canceled"}, status=200)
+        else:
+            visit = Visit.objects.get(pk=visit_id)
+            visit.animal = None
+            visit.save()
+            return JsonResponse({"status": "Canceled"}, status=200)
+
 
 
 def check_if_all_not_none(body, fields) -> str | bool:
