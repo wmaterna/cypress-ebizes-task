@@ -81,6 +81,7 @@ const Animals: React.FC<props> = () => {
             console.log("Puste imie")
             setNameError("Podaj imię zwierzęcia!");
             setIsNameError(true);
+            return false;
         } else {
             setNameError("");
             setIsNameError(false);
@@ -90,9 +91,11 @@ const Animals: React.FC<props> = () => {
             console.log("waga pusta")
             setWeightError("Podaj wagę zwierzęcia!");
             setIsWeightError(true)
+            return false;
         } else if (weight < 0) {
             setWeightError("Waga nie może być liczbą ujemną!");
             setIsWeightError(true)
+            return false;
         } else {
             setWeightError("");
             setIsWeightError(false)
@@ -101,9 +104,11 @@ const Animals: React.FC<props> = () => {
         if (height === 0) {
             setHeightError("Podaj wzrost zwierzęcia!");
             setIsHeightError(true);
+            return false;
         } else if (height < 0) {
             setHeightError("Wzrost nie może być liczbą ujemną!");
             setIsHeightError(true);
+            return false;
         } else {
             setHeightError("");
             setIsHeightError(false);
@@ -118,8 +123,8 @@ const Animals: React.FC<props> = () => {
         // console.log(!(isNameError || isWeightError || isHeightError))
         // console.log((isNameError || isWeightError || isHeightError))
 
-        // return false;
-        return isNameError && isWeightError && isHeightError
+        return true;
+        // return !(isNameError && isWeightError && isHeightError)
     }
 
 
@@ -146,7 +151,7 @@ const Animals: React.FC<props> = () => {
                 race,
                 species: Number(species),
                 additionalSpecies: additionalSpecies,
-                dateOfBirth: dateOfBirth.toString(),
+                dateOfBirth: moment(dateOfBirth).format("YYYY-MM-DD"),
             }).then(() => {
                 setOpen(false);
                 setServerError("")

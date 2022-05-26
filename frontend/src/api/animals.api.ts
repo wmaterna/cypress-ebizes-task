@@ -39,7 +39,7 @@ const getAllSpecies = (): Promise<Species[]> => {
 
 const addNewPet = (newPet: AddNewPet) => {
     console.log(newPet)
-    return axios.post('/addPet/', newPet);
+    return axios.post('/pets', newPet);
 }
 
 const getUserPets = (): Promise<UserPet[]> => {
