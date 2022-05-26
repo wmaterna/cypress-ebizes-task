@@ -18,9 +18,8 @@ import {DesktopDatePicker} from '@mui/x-date-pickers/DesktopDatePicker';
 import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import FormHelperText from '@mui/material/FormHelperText';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
-import {Pet, PetErrors, Species} from "../../types/animals.types";
+import {Species} from "../../types/animals.types";
 import moment from "moment";
 import {animalsApi} from "../../api/animals.api";
 import MyAnimalsList from "./MyAnimalsList/MyAnimalsList";
@@ -32,8 +31,6 @@ interface props {
 const Animals: React.FC<props> = () => {
     const [open, setOpen] = React.useState(false);
     const [speciesList, setSpeciesList] = useState<Species[]>([]);
-
-    const [formIsValid, setFormIsValid] = useState(false);
 
     const [name, setName] = useState('');
     const [weight, setWeight] = useState(10);
@@ -72,27 +69,23 @@ const Animals: React.FC<props> = () => {
     };
 
     const isValidForm = (): boolean => {
-        // console.log("name", name)
-        // console.log("race ", race)
-        // console.log("weight", weight)
-        // console.log("height", height)
-
         if (name === '') {
-            console.log("Puste imie")
             setNameError("Podaj imię zwierzęcia!");
             setIsNameError(true);
+            return false;
         } else {
             setNameError("");
             setIsNameError(false);
         }
 
         if (weight === 0) {
-            console.log("waga pusta")
             setWeightError("Podaj wagę zwierzęcia!");
             setIsWeightError(true)
+            return false;
         } else if (weight < 0) {
             setWeightError("Waga nie może być liczbą ujemną!");
             setIsWeightError(true)
+            return false;
         } else {
             setWeightError("");
             setIsWeightError(false)
@@ -101,52 +94,33 @@ const Animals: React.FC<props> = () => {
         if (height === 0) {
             setHeightError("Podaj wzrost zwierzęcia!");
             setIsHeightError(true);
+            return false;
         } else if (height < 0) {
             setHeightError("Wzrost nie może być liczbą ujemną!");
             setIsHeightError(true);
+            return false;
         } else {
             setHeightError("");
             setIsHeightError(false);
         }
-        //
-        // console.log(nameError)
-        console.log(isNameError)
-        // console.log(weightError)
-        console.log(isWeightError)
-        //
-        console.log(isHeightError)
-        // console.log(!(isNameError || isWeightError || isHeightError))
-        // console.log((isNameError || isWeightError || isHeightError))
 
-        // return false;
-        return isNameError && isWeightError && isHeightError
+        return true;
     }
-
 
     useEffect(() => {
         animalsApi.getAllSpecies().then(res => setSpeciesList(res));
     }, [])
 
-    // useEffect(() => {
-    //     if (formIsValid && isSubmit && !invalidDateOfBirth) {
-    //         addNewPet()
-    //     }
-    // }, [formIsValid, invalidDateOfBirth, isSubmit])
-
     const addNewPet = () => {
-        console.log("invalidDateOfBirth: ", invalidDateOfBirth)
-        console.log("isValidForm(): ", isValidForm())
-        console.log("formIsValid && isSubmit: ", formIsValid && invalidDateOfBirth)
-
-        if (isValidForm()) {
+        if (isValidForm() && invalidDateOfBirth) {
             animalsApi.addNewPet({
                 name,
                 weight,
                 height,
                 race,
-                species: Number(species),
+                speciesId: Number(species),
                 additionalSpecies: additionalSpecies,
-                dateOfBirth: dateOfBirth.toString(),
+                dateOfBirth: moment(dateOfBirth).format("YYYY-MM-DD"),
             }).then(() => {
                 setOpen(false);
                 setServerError("")
@@ -324,7 +298,7 @@ const Animals: React.FC<props> = () => {
                         <Button onClick={handleClose}>ANULUJ</Button>
                         <Button
                             variant="contained"
-                            onClick={(e) => addNewPet()}>
+                            onClick={() => addNewPet()}>
                             DODAJ ZWIERZĘ
                         </Button>
                     </DialogActions>
