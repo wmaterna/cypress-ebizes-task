@@ -291,6 +291,7 @@ def add_animal_view(request):
                 name=body["name"],
                 weight=float(body["weight"]),
                 height=float(body["height"]),
+                user=request.user
             )
             print(type(body))
 
