@@ -34,9 +34,8 @@ const Animals: React.FC<props> = () => {
     const [speciesList, setSpeciesList] = useState<Species[]>([]);
 
     const [formIsValid, setFormIsValid] = useState(false);
-    const [isSubmit, setIsSubmit] = useState(false);
 
-    const [name, setName] = useState('Podaj Imię zwierzaka');
+    const [name, setName] = useState('');
     const [weight, setWeight] = useState(10);
     const [height, setHeight] = useState(10);
     const [race, setRace] = useState('');
@@ -72,11 +71,11 @@ const Animals: React.FC<props> = () => {
         setOpen(false);
     };
 
-    const isValidateForm = (): boolean => {
-        console.log("name", name)
-        console.log("race ", race)
-        console.log("weight", weight)
-        console.log("height", height)
+    const isValidForm = (): boolean => {
+        // console.log("name", name)
+        // console.log("race ", race)
+        // console.log("weight", weight)
+        // console.log("height", height)
 
         if (name === '') {
             console.log("Puste imie")
@@ -109,39 +108,37 @@ const Animals: React.FC<props> = () => {
             setHeightError("");
             setIsHeightError(false);
         }
-
-        console.log(nameError)
+        //
+        // console.log(nameError)
         console.log(isNameError)
-        console.log(weightError)
+        // console.log(weightError)
         console.log(isWeightError)
-
+        //
         console.log(isHeightError)
-        console.log(!(isNameError || isWeightError || isHeightError))
-        console.log((isNameError || isWeightError || isHeightError))
+        // console.log(!(isNameError || isWeightError || isHeightError))
+        // console.log((isNameError || isWeightError || isHeightError))
 
-        return !(isNameError || isWeightError || isHeightError)
+        // return false;
+        return isNameError && isWeightError && isHeightError
     }
 
-    const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault();
-        setIsSubmit(true);
-        console.log("form is valid: ", formIsValid)
-        setFormIsValid(isValidateForm())
-        console.log("form is valid2: ", formIsValid)
-        addNewPet()
-    };
 
     useEffect(() => {
         animalsApi.getAllSpecies().then(res => setSpeciesList(res));
     }, [])
 
-    const addNewPet = () => {
-        console.log("isSubmit: ", isSubmit)
-        console.log("formIsValid: ", formIsValid)
-        console.log("invalidDateOfBirth: ", invalidDateOfBirth)
-        console.log("formIsValid && isSubmit: ", formIsValid && isSubmit && invalidDateOfBirth)
+    // useEffect(() => {
+    //     if (formIsValid && isSubmit && !invalidDateOfBirth) {
+    //         addNewPet()
+    //     }
+    // }, [formIsValid, invalidDateOfBirth, isSubmit])
 
-        if (formIsValid && isSubmit && !invalidDateOfBirth) {
+    const addNewPet = () => {
+        console.log("invalidDateOfBirth: ", invalidDateOfBirth)
+        console.log("isValidForm(): ", isValidForm())
+        console.log("formIsValid && isSubmit: ", formIsValid && invalidDateOfBirth)
+
+        if (isValidForm()) {
             animalsApi.addNewPet({
                 name,
                 weight,
@@ -153,15 +150,10 @@ const Animals: React.FC<props> = () => {
             }).then(() => {
                 setOpen(false);
                 setServerError("")
-                setIsSubmit(false);
             }, () => {
                 setServerError("Wystąpił błąd, odśwież stronę i spróbuj jeszcze raz.")
-                setIsSubmit(false);
             })
         }
-
-        // setServerError("")
-        // setIsSubmit(false);
     };
 
     return (
@@ -330,7 +322,11 @@ const Animals: React.FC<props> = () => {
 
                     <DialogActions>
                         <Button onClick={handleClose}>ANULUJ</Button>
-                        <Button variant="contained" onClick={(e) => handleSubmit(e)}>DODAJ ZWIERZĘ</Button>
+                        <Button
+                            variant="contained"
+                            onClick={(e) => addNewPet()}>
+                            DODAJ ZWIERZĘ
+                        </Button>
                     </DialogActions>
                 </Dialog>
             </div>
