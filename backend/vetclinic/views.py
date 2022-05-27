@@ -13,7 +13,7 @@ from json import JSONDecodeError
 import datetime
 from datetime import date
 
-from .models import CustomUser, Visit, Animal
+from .models import CustomUser, Visit, Animal, Species
 from .forms import LoginForm
 
 
@@ -379,3 +379,14 @@ def get_treatment_history(request: HttpRequest, pet_id: int) -> JsonResponse:
         if not visists:
             return JsonResponse({'message': 'no visits found'}, status=404)
         return JsonResponse([{'id': v.id, 'date': v.date, 'note': v.note} for v in visists], safe=False)
+      
+
+@csrf_exempt
+def get_species_view(request):
+    if request.method == 'GET':
+        species = Species.objects.all()
+
+        if species is None:
+            return JsonResponse({'error': 'Spiecies table is empty'}, status=404)
+
+        return JsonResponse(list(species.values()), safe=False)
