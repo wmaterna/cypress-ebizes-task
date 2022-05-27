@@ -21,7 +21,7 @@ import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
-import {Species} from "../../types/animals.types";
+import {Species, UserPet} from "../../types/animals.types";
 import moment from "moment";
 import {animalsApi} from "../../api/animals.api";
 import MyAnimalsList from "./MyAnimalsList/MyAnimalsList";
@@ -32,6 +32,7 @@ interface props {
 
 const Animals: React.FC<props> = () => {
     const [open, setOpen] = React.useState(false);
+    const [userAnimals, setUserAnimals] = useState<UserPet[]>([]);
     const [speciesList, setSpeciesList] = useState<Species[]>([]);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -111,6 +112,14 @@ const Animals: React.FC<props> = () => {
         return true;
     }
 
+    const getAnimalsList = () => {
+        animalsApi.getUserPets().then((res: UserPet[]) => setUserAnimals(res));
+    }
+
+    useEffect(() => {
+        getAnimalsList()
+    }, [])
+
     useEffect(() => {
         animalsApi.getAllSpecies().then(res => setSpeciesList(res));
     }, [])
@@ -128,6 +137,7 @@ const Animals: React.FC<props> = () => {
                 additionalSpecies: additionalSpecies,
                 dateOfBirth: moment(dateOfBirth).format("YYYY-MM-DD"),
             }).then(() => {
+                getAnimalsList()
                 setOpen(false);
                 setServerError("")
                 setIsButtonDisabled(false);
@@ -320,7 +330,7 @@ const Animals: React.FC<props> = () => {
                 </Dialog>
             </div>
 
-            <MyAnimalsList/>
+            <MyAnimalsList userAnimals={userAnimals} getAnimalsList={getAnimalsList}/>
         </div>
     )
 }
