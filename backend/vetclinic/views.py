@@ -309,6 +309,17 @@ def add_animal_view(request):
         except JSONDecodeError:
             return JsonResponse({"message": "Invalid body"}, status=400)
 
+@csrf_exempt
+def delete_animal_view(request: HttpRequest, id: int):
+    if request.method == "DELETE":
+        try:
+            animal = Animal.objects.get(id=14)
+            animal.is_deleted = True
+            animal.save()
+            return JsonResponse(animal.id, safe=False, status=200)
+        except:
+            return JsonResponse({"message": "delete error"}, safe=False, status=400)
+
 
 @csrf_exempt
 def edit_visit_view(request: HttpRequest, visit_id: int) -> JsonResponse:

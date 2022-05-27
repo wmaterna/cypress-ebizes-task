@@ -13,8 +13,13 @@ const getUserPets = (): Promise<UserPet[]> => {
     return axios.get('/pets/view/').then(res => res.data);
 }
 
+const deletePet = (id: number): Promise<number> => {
+    return axios.delete(`/pets/${id}`);
+}
+
 export const animalsApi = {
     addNewPet,
     getAllSpecies,
-    getUserPets
+    getUserPets,
+    deletePet
 }
