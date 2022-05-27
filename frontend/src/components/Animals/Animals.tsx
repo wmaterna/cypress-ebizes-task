@@ -11,6 +11,8 @@ import {
     InputAdornment,
     TextField
 } from "@mui/material";
+import LinearProgress from '@mui/material/LinearProgress';
+import Box from '@mui/material/Box';
 import PetsIcon from '@mui/icons-material/Pets';
 import Typography from '@mui/material/Typography';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
@@ -31,6 +33,8 @@ interface props {
 const Animals: React.FC<props> = () => {
     const [open, setOpen] = React.useState(false);
     const [speciesList, setSpeciesList] = useState<Species[]>([]);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const [name, setName] = useState('');
     const [weight, setWeight] = useState(10);
@@ -113,6 +117,8 @@ const Animals: React.FC<props> = () => {
 
     const addNewPet = () => {
         if (isValidForm() && !invalidDateOfBirth) {
+            setIsButtonDisabled(true)
+            setIsLoading(true);
             animalsApi.addNewPet({
                 name,
                 weight,
@@ -124,7 +130,11 @@ const Animals: React.FC<props> = () => {
             }).then(() => {
                 setOpen(false);
                 setServerError("")
+                setIsButtonDisabled(false);
+                setIsLoading(false);
             }, () => {
+                setIsButtonDisabled(false);
+                setIsLoading(false);
                 setServerError("Wystąpił błąd, odśwież stronę i spróbuj jeszcze raz.")
             })
         }
@@ -143,6 +153,10 @@ const Animals: React.FC<props> = () => {
                 </Button>
 
                 <Dialog open={open} onClose={handleClose}>
+                    {isLoading && <Box sx={{width: '100%'}}>
+                        <LinearProgress/>
+                    </Box>}
+
                     <DialogTitle>Dodaj nowe zwierzę</DialogTitle>
                     <DialogContent>
                         <Grid container spacing={2}>
@@ -298,6 +312,7 @@ const Animals: React.FC<props> = () => {
                         <Button onClick={handleClose}>ANULUJ</Button>
                         <Button
                             variant="contained"
+                            disabled={isButtonDisabled}
                             onClick={() => addNewPet()}>
                             DODAJ ZWIERZĘ
                         </Button>
