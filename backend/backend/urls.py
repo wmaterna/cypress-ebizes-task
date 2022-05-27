@@ -32,5 +32,5 @@ urlpatterns = [
     path('visits', views.get_scheduled_visits_view),
     path('visits/<int:visit_id>', views.edit_visit_view),
     path('visits/<int:visit_id>/addnote', views.add_note_view)
-    # path('species/', views.get_species_view)
+    path('species', views.get_species_view)
 ]
