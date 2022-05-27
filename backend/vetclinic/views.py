@@ -338,7 +338,6 @@ def edit_visit_view(request: HttpRequest, visit_id: int) -> JsonResponse:
             return JsonResponse({"status": "Canceled"}, status=200)
 
 
-
 def check_if_all_not_none(body, fields) -> str | bool:
     for x in fields:
         try:
@@ -370,6 +369,19 @@ def get_animal_view(request):
 
 
 @csrf_exempt
+def get_treatment_history(request: HttpRequest, pet_id: int) -> JsonResponse:
+    if request.method == 'GET':
+        visists = Visit.objects.filter(
+            animal_id=pet_id
+        ).filter(
+            date__lte=datetime.datetime.now()
+        )
+        if not visists:
+            return JsonResponse({'message': 'no visits found'}, status=404)
+        return JsonResponse([{'id': v.id, 'date': v.date, 'note': v.note} for v in visists], safe=False)
+      
+
+@csrf_exempt
 def add_note_view(request: HttpRequest, visit_id: int) -> JsonResponse:
     if request.method == 'POST':
         visit = Visit.objects.filter(pk=visit_id)
@@ -382,6 +394,7 @@ def add_note_view(request: HttpRequest, visit_id: int) -> JsonResponse:
         return JsonResponse({'message': 'Note added successfully'})
 
       
+
 @csrf_exempt
 def get_species_view(request):
     if request.method == 'GET':
