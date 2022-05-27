@@ -313,7 +313,7 @@ def add_animal_view(request):
 def delete_animal_view(request: HttpRequest, id: int):
     if request.method == "DELETE":
         try:
-            animal = Animal.objects.get(id=14)
+            animal = Animal.objects.get(id=id)
             animal.is_deleted = True
             animal.save()
             return JsonResponse(animal.id, safe=False, status=200)
@@ -376,7 +376,7 @@ def find_animal(list, id):
 @csrf_exempt
 def get_animal_view(request):
     if request.method == 'GET':
-        user_animals = Animal.objects.filter(user=request.user)
+        user_animals = Animal.objects.filter(user=request.user, is_deleted=False)
 
         return JsonResponse([{
             'id': x.id,

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import './MyAnimalsList.css';
 import {UserPet} from "../../../types/animals.types";
 import {animalsApi} from "../../../api/animals.api";
@@ -21,13 +21,13 @@ import {
 } from "@mui/material";
 
 interface props {
-
+    userAnimals: UserPet[];
+    getAnimalsList: Function;
 }
 
-const MyAnimalsList: React.FC<props> = () => {
+const MyAnimalsList: React.FC<props> = ({userAnimals, getAnimalsList}) => {
     const [open, setOpen] = React.useState(false);
     const [deleteAnimalId, setDeleteAnimalId] = React.useState(-1);
-    const [userAnimals, setUserAnimals] = useState<UserPet[]>([]);
     const [serverError, setServerError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
@@ -47,6 +47,7 @@ const MyAnimalsList: React.FC<props> = () => {
         setIsLoading(true);
         animalsApi.deletePet(deleteAnimalId).then(
             () => {
+                getAnimalsList();
                 setOpen(false);
                 setDeleteAnimalId(-1);
                 setServerError("")
@@ -60,10 +61,6 @@ const MyAnimalsList: React.FC<props> = () => {
     const trimDate = (date: string): string => {
         return date.split('T')[0];
     }
-
-    useEffect(() => {
-        animalsApi.getUserPets().then((res: UserPet[]) => setUserAnimals(res));
-    }, [])
 
     return (
         <div className="user-animals">
