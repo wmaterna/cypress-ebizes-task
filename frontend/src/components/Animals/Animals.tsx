@@ -112,7 +112,7 @@ const Animals: React.FC<props> = () => {
     }, [])
 
     const addNewPet = () => {
-        if (isValidForm() && invalidDateOfBirth) {
+        if (isValidForm() && !invalidDateOfBirth) {
             animalsApi.addNewPet({
                 name,
                 weight,

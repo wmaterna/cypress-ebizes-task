@@ -33,8 +33,7 @@ const userPets: UserPet[] = [
 ]
 
 const getAllSpecies = (): Promise<Species[]> => {
-    // return axios.get("/species/").then(res => res.data)   // when backend will work
-    return Promise.resolve(speciesList);
+    return axios.get("/species/").then(res => res.data)
 }
 
 const addNewPet = (newPet: AddNewPet) => {
