@@ -366,8 +366,17 @@ def find_animal(list, id):
 @csrf_exempt
 def get_animal_view(request):
     if request.method == 'GET':
-        user_animals = Animal.objects.all()
-        return JsonResponse([{'id': x.id, 'name': x.name, 'parameters': f'{x.weight} {x.height}'} for x in user_animals], safe=False)
+        user_animals = Animal.objects.filter(user=request.user)
+
+        return JsonResponse([{
+            'id': x.id,
+            'name': x.name,
+            'species': x.species.name,
+            'race': x.race,
+            'weight': x.weight,
+            'height': x.height,
+            'dateOfBirth': x.date_of_birth,
+        } for x in user_animals], safe=False, status=200)
 
 
 @csrf_exempt

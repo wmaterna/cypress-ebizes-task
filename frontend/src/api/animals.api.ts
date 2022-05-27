@@ -11,27 +11,6 @@ const speciesList: Species[] = [
     {id: 7, name: "Zwierze Egzotyczne"},
 ]
 
-const userPets: UserPet[] = [
-    {
-        id: 1,
-        name: 'Bafuś',
-        species: 'Pies',
-        race: 'Pekińczyk',
-        weight: 20,
-        height: 50,
-        dateOfBirth: '12-12-2021',
-    },
-    {
-        id: 2,
-        name: 'Grzywa',
-        species: 'Koń',
-        race: '',
-        weight: 220,
-        height: 170,
-        dateOfBirth: '02-12-2019',
-    },
-]
-
 const getAllSpecies = (): Promise<Species[]> => {
     // return axios.get("/species/").then(res => res.data)   // when backend will work
     return Promise.resolve(speciesList);
@@ -43,8 +22,7 @@ const addNewPet = (newPet: AddNewPet) => {
 }
 
 const getUserPets = (): Promise<UserPet[]> => {
-    // return axios.get('/pets/');
-    return Promise.resolve(userPets);
+    return axios.get('/pets/view/').then(res => res.data);
 }
 
 export const animalsApi = {
