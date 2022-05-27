@@ -370,6 +370,19 @@ def get_animal_view(request):
 
 
 @csrf_exempt
+def add_note_view(request: HttpRequest, visit_id: int) -> JsonResponse:
+    if request.method == 'POST':
+        visit = Visit.objects.filter(pk=visit_id)
+        if not visit:
+            return JsonResponse({'error': 'Visit with this id does not exist!'}, status=400)
+
+        note = json.loads(request.body)['note']
+        visit[0].note = note
+        visit[0].save()
+        return JsonResponse({'message': 'Note added successfully'})
+
+      
+@csrf_exempt
 def get_species_view(request):
     if request.method == 'GET':
         species = Species.objects.all()
@@ -378,3 +391,4 @@ def get_species_view(request):
             return JsonResponse({'error': 'Spiecies table is empty'}, status=404)
 
         return JsonResponse(list(species.values()), safe=False)
+
