@@ -13,7 +13,7 @@ from json import JSONDecodeError
 import datetime
 from datetime import date
 
-from .models import CustomUser, Visit, Animal
+from .models import CustomUser, Visit, Animal, Species
 from .forms import LoginForm
 
 
@@ -367,3 +367,14 @@ def get_animal_view(request):
     if request.method == 'GET':
         user_animals = Animal.objects.all()
         return JsonResponse([{'id': x.id, 'name': x.name, 'parameters': f'{x.weight} {x.height}'} for x in user_animals], safe=False)
+
+
+@csrf_exempt
+def get_species_view(request):
+    if request.method == 'GET':
+        species = Species.objects.all()
+
+        if species is None:
+            return JsonResponse({'error': 'Spiecies table is empty'}, status=404)
+
+        return JsonResponse(list(species.values()), safe=False)
