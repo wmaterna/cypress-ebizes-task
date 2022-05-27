@@ -313,7 +313,7 @@ const Animals: React.FC<props> = () => {
             <MyAnimalsList />
 
             <Typography variant="h4" gutterBottom component="div" style={{marginTop: '70px'}}>
-                   Moje wizyty
+                  Historia wizyt
             </Typography>
             <MyVisitsHistory />
         </div>

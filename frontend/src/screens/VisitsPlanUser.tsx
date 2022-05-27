@@ -1,27 +1,22 @@
 import React, {useCallback, useEffect, useMemo, useState} from "react";
-import VisitsCard from "./VisitsCard";
+import VisitsCard from "./doctors-screens/Timetable/VisitsCard";
 import {Typography} from "@mui/material";
 import {Grid} from "@mui/material"
 import DatePicker from "react-datepicker";
-import {doctorsApi} from "../../../api/doctors.api";
-import {visitsApi} from "../../../api/visits.api";
-import {Doctor, Visit} from "../../../types";
+import {Visit} from "../types/visit.types"
 import moment, {Moment} from "moment";
 
 
-const DoctorsTimetable: React.FC = () => {
+ const VisitsPlanUser: React.FC = () => {
 
     const [date, setDate] = useState<Date>();
-    const [doctors, setDoctors] = useState<Doctor[]>([]);
     const [visits, setVisits] = useState<Visit[]>([])
-    const [doctorId, setDoctorId] = useState<number | "">(0);
-    const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
+    // const [doctorId, setDoctorId] = useState<number | "">(0);
+    // const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
 
 
     useEffect(() => {
-            visitsApi
-                .getVisitsDoctor(moment(date))
-                .then(res => setVisits(res));
+
     }, [date])
 
     return (
@@ -43,7 +38,7 @@ const DoctorsTimetable: React.FC = () => {
                 <>
                     {visits.map((visit) => {
                         return (
-                             <VisitsCard visit_date={visit.date.toString()} petName={visit.animal.name} isDoctor={true}/>
+                              <VisitsCard visit_date={visit.date.toString()} petName={visit.animal.name} isDoctor={false}/>
                         )
                         })
                     }
@@ -54,5 +49,4 @@ const DoctorsTimetable: React.FC = () => {
     )
 }
 
-export default DoctorsTimetable;
-
+export default VisitsPlanUser;
