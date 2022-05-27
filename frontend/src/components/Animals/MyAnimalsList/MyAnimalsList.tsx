@@ -14,6 +14,10 @@ const MyAnimalsList: React.FC<props> = () => {
 
     const [userAnimals, setUserAnimals] = useState<UserPet[]>([]);
 
+    const trimDate = (date: string): string => {
+        return date.split('T')[0];
+    }
+
     useEffect(() => {
         animalsApi.getUserPets().then((res: UserPet[]) => setUserAnimals(res));
     }, [])
@@ -30,7 +34,7 @@ const MyAnimalsList: React.FC<props> = () => {
             }
 
             {
-                userAnimals.map(( {name, species, additionalSpecies, race, weight, height, dateOfBirth}) => (
+                userAnimals.map(({name, species, additionalSpecies, race, weight, height, dateOfBirth}) => (
                     <Card key={name} className="animals-list">
                         <CardContent>
                             <Typography variant="h5" gutterBottom>
@@ -38,15 +42,15 @@ const MyAnimalsList: React.FC<props> = () => {
                             </Typography>
                             <Typography color="text.secondary">
                                 {species} {additionalSpecies} {race}
-                            </Typography >
+                            </Typography>
                             <Typography color="text.secondary">
-                              {weight} kg - {height} cm
-                            </Typography >
+                                {weight} kg - {height} cm
+                            </Typography>
                             <Typography color="text.secondary">
-                                {dateOfBirth}
-                            </Typography >
-                            </CardContent >
-                    </Card >
+                                {trimDate(dateOfBirth)}
+                            </Typography>
+                        </CardContent>
+                    </Card>
                 ))
             }
         </div>
