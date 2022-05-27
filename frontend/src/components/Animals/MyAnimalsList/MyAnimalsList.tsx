@@ -57,6 +57,10 @@ const MyAnimalsList: React.FC<props> = () => {
             })
     };
 
+    const trimDate = (date: string): string => {
+        return date.split('T')[0];
+    }
+
     useEffect(() => {
         animalsApi.getUserPets().then((res: UserPet[]) => setUserAnimals(res));
     }, [])
@@ -100,7 +104,7 @@ const MyAnimalsList: React.FC<props> = () => {
                                 {weight} kg - {height} cm
                             </Typography>
                             <Typography color="text.secondary">
-                                {dateOfBirth}
+                                {trimDate(dateOfBirth)}
                             </Typography>
                         </CardContent>
                     </Card>

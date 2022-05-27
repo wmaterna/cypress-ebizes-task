@@ -350,7 +350,6 @@ def edit_visit_view(request: HttpRequest, visit_id: int) -> JsonResponse:
             return JsonResponse({"status": "Canceled"}, status=200)
 
 
-
 def check_if_all_not_none(body, fields) -> str | bool:
     for x in fields:
         try:
@@ -377,9 +376,45 @@ def find_animal(list, id):
 @csrf_exempt
 def get_animal_view(request):
     if request.method == 'GET':
-        user_animals = Animal.objects.all()
-        return JsonResponse([{'id': x.id, 'name': x.name, 'parameters': f'{x.weight} {x.height}'} for x in user_animals], safe=False)
+        user_animals = Animal.objects.filter(user=request.user)
 
+        return JsonResponse([{
+            'id': x.id,
+            'name': x.name,
+            'species': x.species.name,
+            'race': x.race,
+            'weight': x.weight,
+            'height': x.height,
+            'dateOfBirth': x.date_of_birth,
+        } for x in user_animals], safe=False, status=200)
+
+
+@csrf_exempt
+def get_treatment_history(request: HttpRequest, pet_id: int) -> JsonResponse:
+    if request.method == 'GET':
+        visists = Visit.objects.filter(
+            animal_id=pet_id
+        ).filter(
+            date__lte=datetime.datetime.now()
+        )
+        if not visists:
+            return JsonResponse({'message': 'no visits found'}, status=404)
+        return JsonResponse([{'id': v.id, 'date': v.date, 'note': v.note} for v in visists], safe=False)
+      
+
+@csrf_exempt
+def add_note_view(request: HttpRequest, visit_id: int) -> JsonResponse:
+    if request.method == 'POST':
+        visit = Visit.objects.filter(pk=visit_id)
+        if not visit:
+            return JsonResponse({'error': 'Visit with this id does not exist!'}, status=400)
+
+        note = json.loads(request.body)['note']
+        visit[0].note = note
+        visit[0].save()
+        return JsonResponse({'message': 'Note added successfully'})
+
+      
 
 @csrf_exempt
 def get_species_view(request):
@@ -390,3 +425,4 @@ def get_species_view(request):
             return JsonResponse({'error': 'Spiecies table is empty'}, status=404)
 
         return JsonResponse(list(species.values()), safe=False)
+

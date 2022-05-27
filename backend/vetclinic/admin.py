@@ -3,7 +3,7 @@ from .models import CustomUser, Animal, Visit, Species
 
 
 class VisitAdmin(admin.ModelAdmin):
-    list_display = ['doctor_id', 'date']
+    list_display = ['id', 'doctor_id', 'animal_id', 'date']
     ordering = ['date']
 
 
