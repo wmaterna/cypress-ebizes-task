@@ -75,6 +75,7 @@ class Animal(models.Model):
     height = models.IntegerField(null=True)
     date_of_birth = models.DateTimeField(null=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
+    is_deleted = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.id} - {self.name}"

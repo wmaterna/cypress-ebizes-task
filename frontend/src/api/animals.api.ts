@@ -47,8 +47,13 @@ const getUserPets = (): Promise<UserPet[]> => {
     return Promise.resolve(userPets);
 }
 
+const deletePet = (id: number): Promise<number> => {
+    return axios.delete(`/pets/${id}`);
+}
+
 export const animalsApi = {
     addNewPet,
     getAllSpecies,
-    getUserPets
+    getUserPets,
+    deletePet
 }

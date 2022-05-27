@@ -28,6 +28,7 @@ urlpatterns = [
     path('doctors', views.get_doctors_view),
     path('doctors/<int:doctor_id>/visits', views.get_visits_view),
     path('pets', views.add_animal_view),
+    path('pets/<int:id>', views.delete_animal_view),
     path('pets/view/', views.get_animal_view),
     path('visits', views.get_scheduled_visits_view),
     path('visits/<int:visit_id>', views.edit_visit_view),
