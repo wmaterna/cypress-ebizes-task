@@ -18,7 +18,7 @@ const Sidebar: React.FC<Sidebarprops> = ({token}) => {
 
     const {pathname} = useLocation();
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [isDoctor, setIsDoctor] = useState(localStorage.getItem("isDoctor") ==="True");
+    const [isDoctor, setIsDoctor] = useState(localStorage.getItem("isDoctor") =='True');
 
 console.log(isDoctor, localStorage.getItem("isDoctor"));
     const handleClick = (link: string) => {
@@ -70,14 +70,19 @@ console.log(isDoctor, localStorage.getItem("isDoctor"));
                         isDoctor ?
                             <>Dodaj spotkania</>
                             :
-                            <>Moje wizyty</>
+                            <>Zaplanuj wizyty</>
                     }</Typography>
                 </MenuItem>
-                <MenuItem onClick={isDoctor ? () => handleClick("/dashboard/doc-history") : () => handleClick("/dashboard/history")}>
+                <MenuItem onClick={isDoctor ? () => handleClick("/dashboard/doc-history") : () => handleClick("/dashboard/visitsPlan")}>
                     <ListItemIcon>
                         <ScheduleIcon fontSize="small"/>
                     </ListItemIcon>
-                    <Typography variant="inherit">Historia wizyt</Typography>
+                    <Typography variant="inherit"> {
+                        isDoctor ?
+                            <>Historia wizyt</>
+                            :
+                            <>Plan wizyt</>
+                    }</Typography>
                 </MenuItem>
             </MenuList>
         </Drawer>

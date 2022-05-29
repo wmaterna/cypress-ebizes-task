@@ -12,9 +12,12 @@ import Sidebar from "./components/Sidebar/Sidebar";
 import ScheduleVisit from "./screens/ScheduleVisit";
 import DoctorsTimetable from "./screens/doctors-screens/Timetable/DoctorsTimetable";
 import PlanVisits from "./screens/doctors-screens/PlanVisits/PlanVisits";
+import VisitsPlanUser from "./screens/VisitsPlanUser";
+import UserSetupScreen from "./screens/UserSteupScreen";
 
 import "moment/locale/pl"
 import moment from "moment";
+
 
 
 moment.locale("pl")
@@ -38,6 +41,8 @@ const App: React.FC = () => {
                                     <Route path="/dashboard/scheduleVisit" element={<ScheduleVisit/>}/>
                                     <Route path="/dashboard/doc-addVisits" element={<PlanVisits/>} />
                                     <Route path="/dashboard/doc-timetable" element={<DoctorsTimetable/>} />
+                                    <Route path="/dashboard/visitsPlan" element={<VisitsPlanUser />}/>
+                                    <Route path="/dashboard/user-setup" element={<UserSetupScreen />} />
                                 </Route>
                             )}
 

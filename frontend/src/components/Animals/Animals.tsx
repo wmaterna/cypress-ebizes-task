@@ -25,6 +25,7 @@ import {Species, UserPet} from "../../types/animals.types";
 import moment from "moment";
 import {animalsApi} from "../../api/animals.api";
 import MyAnimalsList from "./MyAnimalsList/MyAnimalsList";
+import MyVisitsHistory from "./MyHistoryList/MyVisitsHistory";
 
 interface props {
 
@@ -331,6 +332,12 @@ const Animals: React.FC<props> = () => {
             </div>
 
             <MyAnimalsList userAnimals={userAnimals} getAnimalsList={getAnimalsList}/>
+
+            <Typography variant="h4" gutterBottom component="div" style={{marginTop: '70px'}}>
+                  Historia wizyt
+            </Typography>
+            <MyVisitsHistory />
+
         </div>
     )
 }

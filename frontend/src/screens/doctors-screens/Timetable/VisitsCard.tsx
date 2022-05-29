@@ -11,17 +11,13 @@ import {Grid} from "@mui/material";
 interface CardInfo{
     visit_date: string,
     petName: string,
+    isDoctor: boolean,
 }
-const bull = (
-  <Box
-    component="span"
-    sx={{ display: 'inline-block', mx: '2px', transform: 'scale(0.8)' }}
-  >
-    •
-  </Box>
-);
 
 const VisitsCard: (props: CardInfo) => JSX.Element = (props: CardInfo) => {
+
+    const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+
     return (
         <Box sx={{ minWidth: 275 }}>
           <Card variant="outlined">
@@ -47,12 +43,11 @@ const VisitsCard: (props: CardInfo) => JSX.Element = (props: CardInfo) => {
                       </Grid>
                       <Grid item xs={2}>
                         <CardActions>
-                          {/*<Button size="small">Cancel Visit</Button>*/}
+                          <Button size="small" onClick={() => setCancelDialogOpen(true)}>Cancel Visit</Button>
                         </CardActions>
                       </Grid>
                   </Grid>
                 </CardContent>
-
           </Card>
     </Box>
     )
