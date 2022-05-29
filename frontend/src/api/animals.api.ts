@@ -50,5 +50,6 @@ export const animalsApi = {
     addNewPet,
     getAllSpecies,
     getUserPets,
-    getVisits
+    getVisits,
+    deletePet
 }
