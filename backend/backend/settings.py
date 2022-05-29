@@ -137,6 +137,7 @@ AUTH_USER_MODEL = 'vetclinic.CustomUser'
 # The actual sending of an email is handled by the email backend
 # https://docs.djangoproject.com/en/4.0/topics/email/#email-backends
 
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # console test send_mail()
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 EMAIL_HOST = 'smtp.gmail.com'

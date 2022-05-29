@@ -11,6 +11,8 @@ import {
     InputAdornment,
     TextField
 } from "@mui/material";
+import LinearProgress from '@mui/material/LinearProgress';
+import Box from '@mui/material/Box';
 import PetsIcon from '@mui/icons-material/Pets';
 import Typography from '@mui/material/Typography';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
@@ -18,9 +20,8 @@ import {DesktopDatePicker} from '@mui/x-date-pickers/DesktopDatePicker';
 import {AdapterDateFns} from '@mui/x-date-pickers/AdapterDateFns';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import FormHelperText from '@mui/material/FormHelperText';
 import Select, {SelectChangeEvent} from '@mui/material/Select';
-import {Pet, PetErrors, Species} from "../../types/animals.types";
+import {Species, UserPet} from "../../types/animals.types";
 import moment from "moment";
 import {animalsApi} from "../../api/animals.api";
 import MyAnimalsList from "./MyAnimalsList/MyAnimalsList";
@@ -31,32 +32,30 @@ interface props {
 }
 
 const Animals: React.FC<props> = () => {
-    let newPet: Pet = {
-        name: '',
-        race: '',
-        weight: 10,
-        height: 0,
-    }
-
-    let petError: PetErrors = {
-        name: '',
-        species: '',
-        weight: '',
-        height: '',
-    }
-
     const [open, setOpen] = React.useState(false);
+    const [userAnimals, setUserAnimals] = useState<UserPet[]>([]);
     const [speciesList, setSpeciesList] = useState<Species[]>([]);
-    const [formErrors, setFormErrors] = useState(petError);
-    const [formValues, setFormValues] = useState(newPet);
-    const [formIsValid, setFormIsValid] = useState(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [name, setName] = useState('');
+    const [weight, setWeight] = useState(10);
+    const [height, setHeight] = useState(10);
+    const [race, setRace] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState(new Date('2022-01-01T21:11:54'));
     const [species, setSpecies] = useState('2');
-    const [speciesError, setSpeciesError] = useState(false);
     const [additionalSpecies, setAdditionalSpecies] = useState('');
+
+    const [nameError, setNameError] = useState('');
+    const [weightError, setWeightError] = useState('');
+    const [heightError, setHeightError] = useState('');
+
+    const [isNameError, setIsNameError] = useState(false);
+    const [isWeightError, setIsWeightError] = useState(false);
+    const [isHeightError, setIsHeightError] = useState(false);
+
     const [invalidDateOfBirth, setInvalidDateOfBirth] = useState(false);
     const [serverError, setServerError] = useState("");
-    const [isSubmit, setIsSubmit] = useState(false);
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -75,73 +74,82 @@ const Animals: React.FC<props> = () => {
         setOpen(false);
     };
 
-    const handleChange = (event: any) => {
-        const {name, value} = event.target;
-        setFormValues({...formValues, [name]: value});
-        setServerError("")
+    const isValidForm = (): boolean => {
+        if (name === '') {
+            setNameError("Podaj imię zwierzęcia!");
+            setIsNameError(true);
+            return false;
+        } else {
+            setNameError("");
+            setIsNameError(false);
+        }
+
+        if (weight === 0) {
+            setWeightError("Podaj wagę zwierzęcia!");
+            setIsWeightError(true)
+            return false;
+        } else if (weight < 0) {
+            setWeightError("Waga nie może być liczbą ujemną!");
+            setIsWeightError(true)
+            return false;
+        } else {
+            setWeightError("");
+            setIsWeightError(false)
+        }
+
+        if (height === 0) {
+            setHeightError("Podaj wzrost zwierzęcia!");
+            setIsHeightError(true);
+            return false;
+        } else if (height < 0) {
+            setHeightError("Wzrost nie może być liczbą ujemną!");
+            setIsHeightError(true);
+            return false;
+        } else {
+            setHeightError("");
+            setIsHeightError(false);
+        }
+
+        return true;
     }
 
-
-    const validate = (values: Pet) => {
-        const errors: any = {};
-
-        if (!values.name) {
-            errors.name = "Podaj imię zwierzęcia!"
-        }
-
-        if (!values.weight) {
-            errors.weight = "Podaj wagę zwierzęcia!"
-        }
-
-        if (!values.height) {
-            errors.height = "Podaj wzrost zwierzęcia!"
-        }
-
-        if (values.weight < 0) {
-            errors.weight = "Waga nie może być liczbą ujemną!"
-        }
-
-        if (values.height < 0) {
-            errors.height = "Wzrost nie może być liczbą ujemną!"
-        }
-
-        return errors;
+    const getAnimalsList = () => {
+        animalsApi.getUserPets().then((res: UserPet[]) => setUserAnimals(res));
     }
 
-    const handleSubmit = () => {
-        setFormErrors(validate(formValues));
-        setFormIsValid(Object.keys(formErrors).length === 0 && !speciesError && !invalidDateOfBirth)
-        setIsSubmit(true);
-    };
+    useEffect(() => {
+        getAnimalsList()
+    }, [])
 
     useEffect(() => {
         animalsApi.getAllSpecies().then(res => setSpeciesList(res));
     }, [])
 
-    useEffect(() => {
-        if (formIsValid && isSubmit) {
+    const addNewPet = () => {
+        if (isValidForm() && !invalidDateOfBirth) {
+            setIsButtonDisabled(true)
+            setIsLoading(true);
             animalsApi.addNewPet({
-                ...formValues,
-                species: Number(species),
+                name,
+                weight,
+                height,
+                race,
+                speciesId: Number(species),
                 additionalSpecies: additionalSpecies,
-                dateOfBirth: dateOfBirth.toString(),
+                dateOfBirth: moment(dateOfBirth).format("YYYY-MM-DD"),
             }).then(() => {
+                getAnimalsList()
                 setOpen(false);
                 setServerError("")
-                setFormValues({
-                    name: '',
-                    race: '',
-                    weight: 10,
-                    height: 0,
-                })
-                setIsSubmit(false);
+                setIsButtonDisabled(false);
+                setIsLoading(false);
             }, () => {
+                setIsButtonDisabled(false);
+                setIsLoading(false);
                 setServerError("Wystąpił błąd, odśwież stronę i spróbuj jeszcze raz.")
-                setIsSubmit(false);
             })
         }
-    }, [formErrors, isSubmit, formValues]);
-
+    };
 
     return (
         <div style={{width: "68%", marginLeft: "25%", padding: "5%"}}>
@@ -150,11 +158,16 @@ const Animals: React.FC<props> = () => {
                     Moje zwierzęta
                 </Typography>
 
-                <Button variant="contained" disabled={speciesList.length === 0} startIcon={<PetsIcon/>} onClick={handleClickOpen}>
+                <Button variant="contained" disabled={speciesList.length === 0} startIcon={<PetsIcon/>}
+                        onClick={handleClickOpen}>
                     Dodaj zwierzę
                 </Button>
 
                 <Dialog open={open} onClose={handleClose}>
+                    {isLoading && <Box sx={{width: '100%'}}>
+                        <LinearProgress/>
+                    </Box>}
+
                     <DialogTitle>Dodaj nowe zwierzę</DialogTitle>
                     <DialogContent>
                         <Grid container spacing={2}>
@@ -170,10 +183,10 @@ const Animals: React.FC<props> = () => {
                                         label="Imię"
                                         type="text"
                                         variant="outlined"
-                                        value={formValues.name}
-                                        onChange={handleChange}
-                                        error={!!formErrors.name}
-                                        helperText={formErrors.name}
+                                        value={name}
+                                        onChange={(e: any) => setName(e.target.value)}
+                                        error={isNameError}
+                                        helperText={nameError}
                                     />
                                 </FormControl>
                             </Grid>
@@ -187,13 +200,14 @@ const Animals: React.FC<props> = () => {
                                         name="species"
                                         value={species}
                                         label="Gatunek"
-                                        error={speciesError}
-                                        onChange={(event: SelectChangeEvent) => {setSpecies(event.target.value as string)}}
+                                        onChange={(event: SelectChangeEvent) => {
+                                            setSpecies(event.target.value as string)
+                                        }}
                                     >
-                                        {speciesList.map(({id, name}) => <MenuItem key={id} value={id}>{name}</MenuItem>)}
+                                        {speciesList.map(({id, name}) => <MenuItem key={id}
+                                                                                   value={id}>{name}</MenuItem>)}
 
                                     </Select>
-                                    {speciesError && <FormHelperText error>{formErrors.species}</FormHelperText>}
                                 </FormControl>
                             </Grid>
 
@@ -209,7 +223,9 @@ const Animals: React.FC<props> = () => {
                                             type="text"
                                             variant="outlined"
                                             value={additionalSpecies}
-                                            onChange={(event) => {setAdditionalSpecies(event.target.value as string)}}
+                                            onChange={(event) => {
+                                                setAdditionalSpecies(event.target.value as string)
+                                            }}
                                         />
                                     </FormControl>
                                 </Grid>
@@ -225,8 +241,8 @@ const Animals: React.FC<props> = () => {
                                         label="Rasa"
                                         type="text"
                                         variant="outlined"
-                                        value={formValues.race}
-                                        onChange={handleChange}
+                                        value={race}
+                                        onChange={(e: any) => setRace(e.target.value)}
                                     />
                                 </FormControl>
                             </Grid>
@@ -249,10 +265,10 @@ const Animals: React.FC<props> = () => {
                                             startAdornment: <InputAdornment position="start">kg</InputAdornment>,
                                             inputProps: {min: 0}
                                         }}
-                                        value={formValues.weight}
-                                        onChange={handleChange}
-                                        error={!!formErrors.weight}
-                                        helperText={formErrors.weight}
+                                        value={weight}
+                                        onChange={(e: any) => setWeight(Number(e.target.value))}
+                                        error={isWeightError}
+                                        helperText={weightError}
                                     />
                                 </FormControl>
                             </Grid>
@@ -275,10 +291,10 @@ const Animals: React.FC<props> = () => {
                                             startAdornment: <InputAdornment position="start">cm</InputAdornment>,
                                             inputProps: {min: 0}
                                         }}
-                                        value={formValues.height}
-                                        onChange={handleChange}
-                                        error={!!formErrors.height}
-                                        helperText={formErrors.height}
+                                        value={height}
+                                        onChange={(e: any) => setHeight(Number(e.target.value))}
+                                        error={isHeightError}
+                                        helperText={heightError}
                                     />
                                 </FormControl>
                             </Grid>
@@ -304,18 +320,24 @@ const Animals: React.FC<props> = () => {
                     </DialogContent>
 
                     <DialogActions>
-                        <Button  onClick={handleClose}>ANULUJ</Button>
-                        <Button variant="contained" onClick={handleSubmit}>DODAJ ZWIERZĘ</Button>
+                        <Button onClick={handleClose}>ANULUJ</Button>
+                        <Button
+                            variant="contained"
+                            disabled={isButtonDisabled}
+                            onClick={() => addNewPet()}>
+                            DODAJ ZWIERZĘ
+                        </Button>
                     </DialogActions>
                 </Dialog>
             </div>
 
-            <MyAnimalsList />
+            <MyAnimalsList userAnimals={userAnimals} getAnimalsList={getAnimalsList}/>
 
             <Typography variant="h4" gutterBottom component="div" style={{marginTop: '70px'}}>
                   Historia wizyt
             </Typography>
             <MyVisitsHistory />
+
         </div>
     )
 }

@@ -7,7 +7,7 @@ export interface Pet {
 
 export interface AddNewPet {
     name: string;
-    species: number;
+    speciesId: number;
     additionalSpecies?: string;
     race: string;
     weight: number;

@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
 from django.db import IntegrityError
 
@@ -13,7 +13,7 @@ from json import JSONDecodeError
 import datetime
 from datetime import date
 
-from .models import CustomUser, Visit, Animal
+from .models import CustomUser, Visit, Animal, Species
 from .forms import LoginForm
 
 
@@ -30,9 +30,9 @@ def register_view(request):
             email = data['email']
             password = data['password']
         except JSONDecodeError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
+            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
         except KeyError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
+            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
 
         try:
             user = CustomUser.objects.create_user(
@@ -69,17 +69,15 @@ def login_view(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            data = {'success': True, "isDoctor": "True" if user.is_doctor else "False"}
             print('Login successful')
+            if user.is_doctor:
+                is_doctor = True
+            else:
+                is_doctor = False
+            return JsonResponse({'success': True, 'isDoctor': str(is_doctor)})
         else:
             print('Login failed')
-            data = {'success': False, 'error': 'Username and password combination incorrect'}
-        return JsonResponse(data)
-
-    # TODO: Remove later
-    elif request.method == 'GET':
-        form = LoginForm()
-        return render(request, 'login.html', {'form': form})
+            return JsonResponse({'success': False, 'error': 'Username and password combination incorrect'}, status=401)
 
 
 # TODO: Remove later
@@ -125,12 +123,12 @@ def add_visits_view(request):
                 elif repeat[i].lower() == 'sunday':
                     repeat[i] = 6
                 else:
-                    return JsonResponse({'success': False, 'error': 'Invalid weekday'})
+                    return JsonResponse({'success': False, 'error': 'Invalid weekday'}, status=400)
 
         except JSONDecodeError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
+            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
         except KeyError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
+            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
 
         start_date = datetime.date(date_from[0], date_from[1], date_from[2])
         end_date = datetime.date(date_to[0], date_to[1], date_to[2] + 1)
@@ -139,9 +137,9 @@ def add_visits_view(request):
         try:
             doctor = CustomUser.objects.get(id=doctor_id)
         except ObjectDoesNotExist:
-            return JsonResponse({'success': False, 'error': 'Wrong doctor id'})
+            return JsonResponse({'success': False, 'error': 'Wrong doctor id'}, status=400)
         if not doctor.is_doctor:
-            return JsonResponse({'success': False, 'error': 'User with this id is not a doctor'})
+            return JsonResponse({'success': False, 'error': 'User with this id is not a doctor'}, status=400)
 
         for i in range(date_range.days):
             date = start_date + datetime.timedelta(days=i)
@@ -153,9 +151,23 @@ def add_visits_view(request):
                     date_time = datetime.datetime(year=date.year, month=date.month, day=date.day,
                                                   hour=hour, minute=minutes)
 
-                    visit = Visit.objects.create(date=date_time, doctor=doctor)
-                    # TODO: check if that visit already exists?
-                    visit.save()
+                    visit_window = datetime.datetime(year=date.year, month=date.month, day=date.day,
+                                                     hour=hour + 1, minute=visit_time + break_time)
+
+                    visit = Visit.objects.filter(
+                        doctor_id=doctor_id
+                    ).filter(
+                        date__gte=date_time
+                    ).filter(
+                        date__lte=visit_window
+                    )
+
+                    if not visit:
+                        visit = Visit.objects.create(date=date_time, doctor=doctor)
+                        visit.save()
+                    else:
+                        print(f'Skipping {date_time}')
+
                     minutes += visit_time + break_time
                 minutes -= 60
 
@@ -167,7 +179,7 @@ def get_visits_view(request, doctor_id):
     try:
         CustomUser.objects.get(id__exact=doctor_id)
     except ObjectDoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Wrong doctor id'})
+        return JsonResponse({'success': False, 'error': 'Wrong doctor id'}, status=400)
 
     if request.method == 'GET':
         try:
@@ -175,9 +187,9 @@ def get_visits_view(request, doctor_id):
             date_to = [int(x) for x in request.GET.get("to").split('-')]
             # doctor_id = int(data['doctorId'])
         except JSONDecodeError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
+            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
         except KeyError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
+            return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
 
         start_date = datetime.date(date_from[0], date_from[1], date_from[2])
         end_date = datetime.date(date_to[0], date_to[1], date_to[2])
@@ -216,35 +228,44 @@ def get_visits_view(request, doctor_id):
 @csrf_exempt
 def get_scheduled_visits_view(request):
     if request.method == 'GET':
+        if request.user.is_doctor:
+            try:
+                date = datetime.date(*map(int, request.GET.get("date", default=str(datetime.date.today())).split('-')))
 
-        if not request.user.is_doctor:
-            JsonResponse({"Message": "You are not a doctor"}, status=403)
+            except JSONDecodeError:
+                return JsonResponse({'error': 'Invalid body'}, status=400)
+            except KeyError:
+                return JsonResponse({'error': 'Invalid body'}, status=400)
 
-        try:
-            date = datetime.date(*map(int, request.GET.get("date").split('-')))
+            visits = Visit.objects.select_related("animal") \
+                .filter(doctor=request.user.id) \
+                .filter(date__range=[date, date + datetime.timedelta(days=1)]) \
+                .exclude(animal_id=None) \
+                .values()
 
-        except JSONDecodeError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
-        except KeyError:
-            return JsonResponse({'success': False, 'error': 'Invalid body'})
+            visits = list(visits)
+            animal_ids = [x["animal_id"] for x in visits]
 
-        visits = Visit.objects.select_related("animal")\
-            .filter(doctor=request.user.id)\
-            .filter(date__range=[date, date + datetime.timedelta(days=1)])\
-            .exclude(animal_id=None)\
-            .values()
+            animals = list(Animal.objects.filter(pk__in=animal_ids).values())
 
-        visits = list(visits)
-        animal_ids = [x["animal_id"] for x in visits]
+            for v in visits:
+                v["animal"] = find_animal(animals, v["animal_id"])
 
-        animals = list(Animal.objects.filter(pk__in=animal_ids).values())
+            return JsonResponse(visits, safe=False)
+        else:
+            animals = list(Animal.objects.filter(user=request.user).values())
+            visits = Visit.objects.select_related("animal")\
+                .filter(animal__in=[x["id"] for x in animals])\
+                .filter(date__gte=datetime.date.today())\
+                .values()
 
-        for v in visits:
-            v["animal"] = find_animal(animals, v["animal_id"])
+            visits = list(visits)
 
-        # for x in data:
-        #     print(x.animal)
-        return JsonResponse(visits, safe=False)
+            for v in visits:
+                v["animal"] = find_animal(animals, v["animal_id"])
+            return JsonResponse(list(visits), safe=False, status=403)
+
+
 
 
 @csrf_exempt
@@ -270,6 +291,7 @@ def add_animal_view(request):
                 name=body["name"],
                 weight=float(body["weight"]),
                 height=float(body["height"]),
+                user=request.user
             )
             print(type(body))
 
@@ -286,6 +308,46 @@ def add_animal_view(request):
             return JsonResponse({"message": "Created"}, status=201)
         except JSONDecodeError:
             return JsonResponse({"message": "Invalid body"}, status=400)
+
+@csrf_exempt
+def delete_animal_view(request: HttpRequest, id: int):
+    if request.method == "DELETE":
+        try:
+            animal = Animal.objects.get(id=id)
+            animal.is_deleted = True
+            animal.save()
+            return JsonResponse(animal.id, safe=False, status=200)
+        except:
+            return JsonResponse({"message": "delete error"}, safe=False, status=400)
+
+
+@csrf_exempt
+def edit_visit_view(request: HttpRequest, visit_id: int) -> JsonResponse:
+    if request.method == "PUT":
+        try:
+            animalId = json.loads(request.body)["petId"]
+
+            visit = Visit.objects.get(pk=visit_id)
+
+            if visit.animal is not None:
+                return JsonResponse({"error": "Visit is already booked"}, status=400)
+
+            visit.animal_id = animalId
+            visit.save()
+
+            return JsonResponse({"status": "Booked"}, status=200)
+        except KeyError as e:
+            return JsonResponse({"error": "Missing required field: petId"}, status=400)
+
+    elif request.method == "DELETE":
+        if request.user.is_doctor:
+            Visit.objects.filter(id=visit_id).delete()
+            return JsonResponse({"status": "Canceled"}, status=200)
+        else:
+            visit = Visit.objects.get(pk=visit_id)
+            visit.animal = None
+            visit.save()
+            return JsonResponse({"status": "Canceled"}, status=200)
 
 
 def check_if_all_not_none(body, fields) -> str | bool:
@@ -314,5 +376,53 @@ def find_animal(list, id):
 @csrf_exempt
 def get_animal_view(request):
     if request.method == 'GET':
-        user_animals = Animal.objects.all()
-        return JsonResponse([{'id': x.id, 'name': x.name, 'parameters': f'{x.weight} {x.height}'} for x in user_animals], safe=False)
+        user_animals = Animal.objects.filter(user=request.user, is_deleted=False)
+
+        return JsonResponse([{
+            'id': x.id,
+            'name': x.name,
+            'species': x.species.name,
+            'race': x.race,
+            'weight': x.weight,
+            'height': x.height,
+            'dateOfBirth': x.date_of_birth,
+        } for x in user_animals], safe=False, status=200)
+
+
+@csrf_exempt
+def get_treatment_history(request: HttpRequest, pet_id: int) -> JsonResponse:
+    if request.method == 'GET':
+        visists = Visit.objects.filter(
+            animal_id=pet_id
+        ).filter(
+            date__lte=datetime.datetime.now()
+        )
+        if not visists:
+            return JsonResponse({'message': 'no visits found'}, status=404)
+        return JsonResponse([{'id': v.id, 'date': v.date, 'note': v.note} for v in visists], safe=False)
+      
+
+@csrf_exempt
+def add_note_view(request: HttpRequest, visit_id: int) -> JsonResponse:
+    if request.method == 'POST':
+        visit = Visit.objects.filter(pk=visit_id)
+        if not visit:
+            return JsonResponse({'error': 'Visit with this id does not exist!'}, status=400)
+
+        note = json.loads(request.body)['note']
+        visit[0].note = note
+        visit[0].save()
+        return JsonResponse({'message': 'Note added successfully'})
+
+      
+
+@csrf_exempt
+def get_species_view(request):
+    if request.method == 'GET':
+        species = Species.objects.all()
+
+        if species is None:
+            return JsonResponse({'error': 'Spiecies table is empty'}, status=404)
+
+        return JsonResponse(list(species.values()), safe=False)
+
