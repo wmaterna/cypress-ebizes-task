@@ -131,7 +131,14 @@ def add_visits_view(request):
             return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
 
         start_date = datetime.date(date_from[0], date_from[1], date_from[2])
-        end_date = datetime.date(date_to[0], date_to[1], date_to[2] + 1)
+        try:
+            end_date = datetime.date(date_to[0], date_to[1], date_to[2] + 1)
+        except ValueError:
+            if date_to[1] == 12:
+                end_date = datetime.date(date_to[0] + 1, 1, 1)
+            else:
+                end_date = datetime.date(date_to[0], date_to[1] + 1, 1)
+
         date_range = end_date - start_date
 
         try:
@@ -145,14 +152,44 @@ def add_visits_view(request):
             date = start_date + datetime.timedelta(days=i)
             if date.weekday() not in repeat:
                 continue
-            minutes = 0
-            for hour in range(time_from[0], time_to[0]):
-                while minutes < 60:
+
+            minutes = time_from[1]
+            if time_from[0] != time_to[0]:
+                for hour in range(time_from[0], time_to[0] + 1):
+                    while minutes < 60:
+                        if hour == time_to[0]:
+                            if minutes > time_to[1]:
+                                break
+                        date_time = datetime.datetime(year=date.year, month=date.month, day=date.day,
+                                                      hour=hour, minute=minutes)
+
+                        visit_window = datetime.datetime(year=date.year, month=date.month, day=date.day,
+                                                         hour=hour + 1, minute=visit_time + break_time)
+
+                        visit = Visit.objects.filter(
+                            doctor_id=doctor_id
+                        ).filter(
+                            date__gte=date_time
+                        ).filter(
+                            date__lte=visit_window
+                        )
+
+                        if not visit:
+                            print(f'Adding {date_time}')
+                            visit = Visit.objects.create(date=date_time, doctor=doctor)
+                            visit.save()
+                        else:
+                            print(f'Skipping {date_time}')
+
+                        minutes += visit_time + break_time
+                    minutes -= 60
+            else:
+                while minutes < time_to[1]:
                     date_time = datetime.datetime(year=date.year, month=date.month, day=date.day,
-                                                  hour=hour, minute=minutes)
+                                                  hour=time_from[0], minute=minutes)
 
                     visit_window = datetime.datetime(year=date.year, month=date.month, day=date.day,
-                                                     hour=hour + 1, minute=visit_time + break_time)
+                                                     hour=time_from[0] + 1, minute=visit_time + break_time)
 
                     visit = Visit.objects.filter(
                         doctor_id=doctor_id
@@ -163,13 +200,13 @@ def add_visits_view(request):
                     )
 
                     if not visit:
+                        print(f'Adding {date_time}')
                         visit = Visit.objects.create(date=date_time, doctor=doctor)
                         visit.save()
                     else:
                         print(f'Skipping {date_time}')
 
                     minutes += visit_time + break_time
-                minutes -= 60
 
         return JsonResponse({'success': True})
 
