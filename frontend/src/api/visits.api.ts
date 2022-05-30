@@ -61,6 +61,19 @@ const getVisitsDoctor = (from: Moment): Promise<Visit[]> => {
             date: moment(v.date)
         })))
 
+// const getPassedVisits = (from: Moment): Promise<Visit[]> => {
+//     return axios.get<VisitResponse[]>(`/visits`, {        // call to api
+//         params: {
+//             date: from.format(DATE_FORMAT)
+//         }
+//     })
+//         .then((res) => res.data)
+//         .then((res) => res.map(v => ({
+//             ...v,
+//             date: moment(v.date)
+//         })))
+
+
 
     // Generator
     // const result = [];
