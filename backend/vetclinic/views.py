@@ -303,8 +303,6 @@ def get_scheduled_visits_view(request):
             return JsonResponse(list(visits), safe=False, status=403)
 
 
-
-
 @csrf_exempt
 def get_doctors_view(request):
     if request.method == 'GET':
@@ -332,13 +330,22 @@ def add_animal_view(request):
             )
             print(type(body))
 
-            if is_none(body, "speciesId"):
+            if is_not_none(body, "speciesId"):
                 animal.species_id = int(body["speciesId"])
+                if int(body["speciesId"]) == 1 and is_not_none(body, "additionalSpecies"):
+                    new_species = Species.objects.create(
+                        name=body["additionalSpecies"],
+                        is_custom=True
+                    )
+                    # new_species.save()
+                    animal.species_id = new_species.id
+                else:
+                    animal.species_id = int(body["speciesId"])
 
-            if is_none(body, "race"):
+            if is_not_none(body, "race"):
                 animal.race = body["race"]
 
-            if is_none(body, "dateOfBirth"):
+            if is_not_none(body, "dateOfBirth"):
                 animal.date_of_birth = date(*map(int, body["dateOfBirth"].split('-')))
 
             animal.save()
@@ -398,7 +405,7 @@ def check_if_all_not_none(body, fields) -> str | bool:
     return True
 
 
-def is_none(dict, field):
+def is_not_none(dict, field):
     return True if field in dict.keys() and dict[field] is not None else False
 
 
@@ -416,14 +423,14 @@ def get_animal_view(request):
         user_animals = Animal.objects.filter(user=request.user, is_deleted=False)
 
         return JsonResponse([{
-            'id': x.id,
-            'name': x.name,
-            'species': x.species.name,
-            'race': x.race,
-            'weight': x.weight,
-            'height': x.height,
-            'dateOfBirth': x.date_of_birth,
-        } for x in user_animals], safe=False, status=200)
+                'id': x.id,
+                'name': x.name,
+                'species': x.species.name if x.species is not None else None,
+                'race': x.race,
+                'weight': x.weight,
+                'height': x.height,
+                'dateOfBirth': x.date_of_birth,
+            } for x in user_animals], safe=False, status=200)
 
 
 @csrf_exempt
@@ -456,7 +463,7 @@ def add_note_view(request: HttpRequest, visit_id: int) -> JsonResponse:
 @csrf_exempt
 def get_species_view(request):
     if request.method == 'GET':
-        species = Species.objects.all()
+        species = Species.objects.filter(is_custom=False)
 
         if species is None:
             return JsonResponse({'error': 'Spiecies table is empty'}, status=404)

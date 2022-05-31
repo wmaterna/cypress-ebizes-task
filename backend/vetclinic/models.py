@@ -60,6 +60,7 @@ class CustomUser(AbstractUser):
 
 class Species(models.Model):
     name = models.CharField(max_length=150)
+    is_custom = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.id} - {self.name}"
