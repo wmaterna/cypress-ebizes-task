@@ -1,6 +1,7 @@
 import axios from "../config/axios.config";
 import moment, {Moment} from "moment";
 import {Visit} from "../types";
+import {AxiosResponse} from "axios";
 
 const DATE_FORMAT = "YYYY-MM-DD"
 
@@ -35,17 +36,6 @@ const getVisits = (doctorId: number, from: Moment, to: Moment): Promise<Visit[]>
             date: moment(v.date)
         })))
 
-
-    // Generator
-    // const result = [];
-    // let id = 0;
-    // let idx = 0
-    // for (let d = moment(from); d.isSameOrBefore(to); d.add(1, "days"), id += 10, idx++) {
-    //     if (idx != 2)
-    //         result.push(...generateVisits(moment(d).add(12, "hours").format("YYYY-MM-DD"), doctorId, id))
-    // }
-    //
-    // return Promise.resolve(result)
 }
 
 
@@ -60,36 +50,17 @@ const getVisitsDoctor = (from: Moment): Promise<Visit[]> => {
             ...v,
             date: moment(v.date)
         })))
-
-// const getPassedVisits = (from: Moment): Promise<Visit[]> => {
-//     return axios.get<VisitResponse[]>(`/visits`, {        // call to api
-//         params: {
-//             date: from.format(DATE_FORMAT)
-//         }
-//     })
-//         .then((res) => res.data)
-//         .then((res) => res.map(v => ({
-//             ...v,
-//             date: moment(v.date)
-//         })))
+}
 
 
-
-    // Generator
-    // const result = [];
-    // let id = 0;
-    // let idx = 0
-    // for (let d = moment(from); d.isSameOrBefore(to); d.add(1, "days"), id += 10, idx++) {
-    //     if (idx != 2)
-    //         result.push(...generateVisits(moment(d).add(12, "hours").format("YYYY-MM-DD"), doctorId, id))
-    // }
-    //
-    // return Promise.resolve(result)
+const cancelVisit = (id: number): Promise<AxiosResponse> => {
+    return axios.delete(`/visits/${id}`)
 }
 
 
 
-
 export const visitsApi = {
-    getVisits, getVisitsDoctor,
+    getVisits,
+    getVisitsDoctor,
+    cancelVisit,
 }

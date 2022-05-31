@@ -4,6 +4,7 @@ import { createTheme, ThemeProvider } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import moment from "moment";
+import {SnackbarProvider} from "notistack";
 
 
 const theme = createTheme({
@@ -20,11 +21,13 @@ const theme = createTheme({
 
 const AppContextProvider: React.FC<{children: ReactElement}> = ({children}) => (
 	<UserContextProvider>
-		<LocalizationProvider dateAdapter={AdapterMoment} locale={moment.locale("pl")}>
-			<ThemeProvider theme={theme}>
-				{children}
-			</ThemeProvider>
-		</LocalizationProvider>
+		<SnackbarProvider maxSnack={3} autoHideDuration={1500}>
+			<LocalizationProvider dateAdapter={AdapterMoment} locale={moment.locale("pl")}>
+				<ThemeProvider theme={theme}>
+					{children}
+				</ThemeProvider>
+			</LocalizationProvider>
+		</SnackbarProvider>
 	</UserContextProvider>
 )
 

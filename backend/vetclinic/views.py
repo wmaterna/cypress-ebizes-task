@@ -294,13 +294,14 @@ def get_scheduled_visits_view(request):
             visits = Visit.objects.select_related("animal")\
                 .filter(animal__in=[x["id"] for x in animals])\
                 .filter(date__gte=datetime.date.today())\
+                .order_by("date")\
                 .values()
 
             visits = list(visits)
 
             for v in visits:
                 v["animal"] = find_animal(animals, v["animal_id"])
-            return JsonResponse(list(visits), safe=False, status=403)
+            return JsonResponse(list(visits), safe=False, status=200)
 
 
 

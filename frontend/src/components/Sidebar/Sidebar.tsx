@@ -7,6 +7,7 @@ import { Drawer, List, ListItem, ListItemIcon, ListItemText, MenuItem, MenuList,
 import Typography from "@mui/material/Typography";
 import {useNavigate, useLocation} from "react-router";
 import Divider from '@mui/material/Divider';
+import {UserContext} from "../../context/UserContext";
 
 type Sidebarprops = {
     token: string | null,
@@ -15,12 +16,11 @@ type Sidebarprops = {
 const Sidebar: React.FC<Sidebarprops> = ({token}) => {
     const navigate = useNavigate();
     const theme = useTheme();
+    const {isDoctor} = useContext(UserContext)
 
     const {pathname} = useLocation();
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [isDoctor, setIsDoctor] = useState(localStorage.getItem("isDoctor") =='True');
 
-console.log(isDoctor, localStorage.getItem("isDoctor"));
     const handleClick = (link: string) => {
         navigate(link);
     }
