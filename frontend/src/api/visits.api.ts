@@ -58,16 +58,18 @@ const scheduleVisit = (visitId: number, petId: number): Promise<AxiosResponse> =
     })
 }
 
-
 const cancelVisit = (id: number): Promise<AxiosResponse> => {
     return axios.delete(`/visits/${id}`)
 }
 
-
+const addVisitNote = (visitId: number, note: string): Promise<AxiosResponse> => {
+    return axios.post(`/visits/${visitId}/addnote`, {note})
+}
 
 export const visitsApi = {
     getVisits,
     getVisitsDoctor,
     cancelVisit,
-    scheduleVisit
+    scheduleVisit,
+    addVisitNote
 }

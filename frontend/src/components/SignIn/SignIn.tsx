@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useContext, useEffect, useState } from 'react';
+import {useContext, useEffect, useState} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from "axios";
 import {useNavigate} from "react-router";
-import { UserContext } from "../../context/UserContext";
+import {UserContext} from "../../context/UserContext";
 
 interface Props {
     setToken: Function;
@@ -65,7 +65,13 @@ export default function SignIn() {
                     if (res.data.success) {
 
                         logIn(res.data.success.toString(), res.data.isDoctor.toString())
-                        navigate("/dashboard/animals");
+
+                        if (res.data.isDoctor.toString() === 'True') {
+                            navigate("/dashboard/doc-timetable");
+                        } else {
+                            navigate("/dashboard/animals");
+                        }
+
                     } else {
                         // setToken(res.data.success);
                         setError(true);

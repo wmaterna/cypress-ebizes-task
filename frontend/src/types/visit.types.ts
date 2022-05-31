@@ -5,7 +5,7 @@ export interface Visit {
     date: Moment,
     doctorId: number,
     animal: Animal,
-    note?: string
+    note: string
 }
 
 export interface DailyVisits {

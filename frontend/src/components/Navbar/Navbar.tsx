@@ -132,11 +132,11 @@ export default function Navbar() {
                                         onClick={isDoctor ? () => handleNavigate("/dashboard/doc-timetable") : () => handleNavigate("/dashboard/animals")}
                                         disableRipple>
                                         <DashboardIcon/>
-                                        Panel uzytkownika
+                                        Panel użytkownika
                                     </MenuItem>
                                     <MenuItem onClick={handleUserAccount} disableRipple>
                                         <EditIcon/>
-                                        Konto uzytkownika
+                                        Konto użytkownika
                                     </MenuItem>
                                     <Divider sx={{my: 0.5}}/>
                                     <MenuItem onClick={handleLogoutClick} disableRipple>
