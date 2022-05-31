@@ -15,5 +15,6 @@ export interface DailyVisits {
 
 
 export interface Animal {
+    id: number;
     name: string
 }

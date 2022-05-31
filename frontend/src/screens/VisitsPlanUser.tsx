@@ -5,6 +5,7 @@ import {Grid} from "@mui/material"
 import DatePicker from "react-datepicker";
 import {Visit} from "../types/visit.types"
 import moment, {Moment} from "moment";
+import {animalsApi} from "../api/animals.api";
 
 
  const VisitsPlanUser: React.FC = () => {
@@ -16,8 +17,13 @@ import moment, {Moment} from "moment";
 
 
     useEffect(() => {
+        animalsApi.getVisits().then(
+            results  => {
+                 setVisits(results)
+            }
 
-    }, [date])
+        )
+    }, [])
 
     return (
         <div style={{width: "68%", marginLeft: "25%", padding: "5%"}}>

@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import './MyVisitsHistory.css';
 import {PetVisits} from "../../../types/animals.types";
+import {Visit} from "../../../types/visit.types";
 import {animalsApi} from "../../../api/animals.api";
 import Typography from "@mui/material/Typography";
 import Card from '@mui/material/Card';
@@ -15,12 +16,12 @@ interface props {
 
 const MyVisitsHistory: React.FC<props> = () => {
 
-    const [userVisitsHistory, setUserVisitsHisory] = useState<PetVisits[]>([]);
+    const [userVisitsHistory, setUserVisitsHisory] = useState<Visit[]>([]);
     const [noteOpen, setNoteOpen] = useState<boolean>(false)
     const [currentIndex, setCurrentIndex] = useState<number>(0);
-    useEffect(() => {
-        animalsApi.getVisits().then((res: PetVisits[]) => setUserVisitsHisory(res));
-    }, [])
+    // useEffect(() => {
+    //     animalsApi.getVisits().then((res: PetVisits[]) => setUserVisitsHisory(res));
+    // }, [])
 
     const handleOpenNote = (index: number) => {
          setNoteOpen(true);
@@ -30,7 +31,7 @@ const MyVisitsHistory: React.FC<props> = () => {
     return (
         <div className="user-animals">
             {
-                userVisitsHistory.map((visit: PetVisits, index: number) => (
+                userVisitsHistory.map((visit: Visit, index: number) => (
                     <Card key={index} className="animals-list">
                         <CardContent>
                             <Grid container
