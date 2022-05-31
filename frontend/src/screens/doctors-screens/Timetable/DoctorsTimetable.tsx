@@ -1,17 +1,19 @@
 import React, {useCallback, useEffect, useMemo, useState} from "react";
 import VisitsCard from "./VisitsCard";
-import {Typography} from "@mui/material";
+import {TextField, Typography} from "@mui/material";
 import {Grid} from "@mui/material"
-import DatePicker from "react-datepicker";
+import {DatePicker} from "@mui/x-date-pickers";
 import {doctorsApi} from "../../../api/doctors.api";
 import {visitsApi} from "../../../api/visits.api";
 import {Doctor, Visit} from "../../../types";
 import moment, {Moment} from "moment";
+import {useSnackbar} from "notistack";
 
 
 const DoctorsTimetable: React.FC = () => {
 
-    const [date, setDate] = useState<Date>();
+    const {enqueueSnackbar} = useSnackbar()
+    const [date, setDate] = useState<Moment>(moment());
     const [doctors, setDoctors] = useState<Doctor[]>([]);
     const [visits, setVisits] = useState<Visit[]>([])
     const [doctorId, setDoctorId] = useState<number | "">(0);
@@ -19,10 +21,20 @@ const DoctorsTimetable: React.FC = () => {
 
 
     useEffect(() => {
-            visitsApi
-                .getVisitsDoctor(moment(date))
-                .then(res => setVisits(res));
+        loadVisits()
     }, [date])
+
+    const loadVisits = () => visitsApi.getVisitsDoctor(date).then(res => setVisits(res));
+
+    const handleCancelVisit = (visitId: number) => {
+        visitsApi.cancelVisit(visitId)
+            .then(
+                loadVisits,
+                () => {
+                    enqueueSnackbar("Nie udało się anulować wizyty", {variant: "error"})
+                }
+            )
+    }
 
     return (
         <div style={{width: "68%", marginLeft: "25%", padding: "5%"}}>
@@ -33,20 +45,29 @@ const DoctorsTimetable: React.FC = () => {
                     </Typography>
                 </Grid>
                 <Grid item xs={2}>
-                <DatePicker
-                        wrapperClassName="datePicker"
-                          selected={date}
-                          onChange={(e: Date) => setDate(e)} />
+                    <DatePicker
+                        label="Data"
+                        value={date}
+                        onChange={(e) => {
+                            if (e !== null){
+                                setDate(e)
+                            }
+                        }}
+                        renderInput={(props) => <TextField fullWidth {...props} />}
+                    />
                 </Grid>
            </Grid>
             {visits.length !== 0 &&
                 <>
-                    {visits.map((visit) => {
-                        return (
-                             <VisitsCard visit_date={visit.date.toString()} petName={visit.animal.name} isDoctor={true}/>
+                    {visits.map((visit) => (
+                             <VisitsCard
+                                 key={visit.id}
+                                 visit={visit}
+                                 isDoctor={true}
+                                 cancelVisitFn={handleCancelVisit}
+                             />
                         )
-                        })
-                    }
+                    )}
                 </>
             }
 

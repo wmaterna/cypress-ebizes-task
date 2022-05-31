@@ -1,5 +1,7 @@
 import axios from "../config/axios.config";
 import {AddNewPet, PetVisits, Species, UserPet} from "../types/animals.types";
+import {Visit} from "../types";
+import moment from "moment";
 
 const userVisits: PetVisits[] = [
     {
@@ -41,9 +43,15 @@ const deletePet = (id: number): Promise<number> => {
     return axios.delete(`/pets/${id}`);
 }
 
-const getVisits = (): Promise<PetVisits[]> => {
-    // return axios.get('/visits/');
-    return Promise.resolve(userVisits);
+const getVisits = (): Promise<Visit[]> => {
+    return axios
+        .get('/visits')
+        .then(res => res.data)
+        .then((res: Visit[]) => res.map(v => ({
+            ...v,
+            date: moment(v.date)
+        })))
+    // return Promise.resolve(userVisits);
 }
 
 export const animalsApi = {

@@ -6,18 +6,19 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import {Grid} from "@mui/material";
+import {Visit} from "../../../types";
+import {visitsApi} from "../../../api/visits.api";
 
 
-interface CardInfo{
-    visit_date: string,
-    petName: string,
+interface CardInfo {
+    visit: Visit
     isDoctor: boolean,
+    cancelVisitFn: (visitId: number) => void
 }
 
-const VisitHistoryCard: (props: CardInfo) => JSX.Element = (props: CardInfo) => {
+const VisitHistoryCard: (props: CardInfo) => JSX.Element = ({visit, isDoctor, cancelVisitFn}) => {
 
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-
     return (
         <Box sx={{ minWidth: 275 }}>
           <Card variant="outlined">
@@ -29,10 +30,10 @@ const VisitHistoryCard: (props: CardInfo) => JSX.Element = (props: CardInfo) => 
                     >
                       <Grid item xs={10}>
                           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                              {props.visit_date}
+                              {visit.date?.format("YYYY-MM-DD HH:mm")}
                           </Typography>
                           <Typography variant="h5" component="div">
-                              <b>{props.petName}</b>
+                              <b>{visit.animal.name}</b>
                           </Typography>
                           <Typography sx={{ mb: 1.5 }} color="text.secondary">
 
@@ -43,7 +44,7 @@ const VisitHistoryCard: (props: CardInfo) => JSX.Element = (props: CardInfo) => 
                       </Grid>
                       <Grid item xs={2}>
                         <CardActions>
-                          <Button size="small" onClick={() => setCancelDialogOpen(true)}>Cancel Visit</Button>
+                          <Button size="small" onClick={() => cancelVisitFn(visit.id)}>Cancel Visit</Button>
                         </CardActions>
                       </Grid>
                   </Grid>

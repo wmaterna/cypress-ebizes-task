@@ -4,20 +4,35 @@ import {Typography} from "@mui/material";
 import {Grid} from "@mui/material"
 import DatePicker from "react-datepicker";
 import {Visit} from "../types/visit.types"
-import moment, {Moment} from "moment";
+import {useSnackbar} from "notistack";
+import {animalsApi} from "../api/animals.api";
+import {visitsApi} from "../api/visits.api";
 
 
- const VisitsPlanUser: React.FC = () => {
+const VisitsPlanUser: React.FC = () => {
 
     const [date, setDate] = useState<Date>();
     const [visits, setVisits] = useState<Visit[]>([])
+    const {enqueueSnackbar} = useSnackbar();
     // const [doctorId, setDoctorId] = useState<number | "">(0);
     // const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
 
+     const loadVisits = () => animalsApi.getVisits().then(results  => setVisits(results))
 
     useEffect(() => {
+        loadVisits()
+    }, [])
 
-    }, [date])
+
+     const handleCancelVisit = (visitId: number) => {
+        visitsApi.cancelVisit(visitId)
+            .then(
+                loadVisits,
+                () => {
+                    enqueueSnackbar("Nie udało się anulować wizyty", {variant: "error"})
+                }
+            )
+     }
 
     return (
         <div style={{width: "68%", marginLeft: "25%", padding: "5%"}}>
@@ -27,21 +42,18 @@ import moment, {Moment} from "moment";
                         Nadchodzące wizyty
                     </Typography>
                 </Grid>
-                <Grid item xs={2}>
-                <DatePicker
-                        wrapperClassName="datePicker"
-                          selected={date}
-                          onChange={(e: Date) => setDate(e)} />
-                </Grid>
+
            </Grid>
             {visits.length !== 0 &&
                 <>
-                    {visits.map((visit) => {
-                        return (
-                              <VisitsCard visit_date={visit.date.toString()} petName={visit.animal.name} isDoctor={false}/>
+                    {visits.map((visit) => (
+                              <VisitsCard
+                                  visit={visit}
+                                  isDoctor={false}
+                                  cancelVisitFn={handleCancelVisit}
+                              />
                         )
-                        })
-                    }
+                    )}
                 </>
             }
 

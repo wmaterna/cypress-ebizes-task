@@ -8,9 +8,9 @@ const getTokenFromStorage = (): string | null => {
 	// return JSON.parse(token ?? 'false');
 }
 
-const getDoctorInfoStorage = (): string | null => {
+const getDoctorInfoStorage = (): boolean | null => {
 	const isDoctor = localStorage.getItem('isDoctor');
-	return isDoctor;
+	return isDoctor ? isDoctor === "True" : null;
 	// return JSON.parse(token ?? 'false');
 }
 
@@ -23,18 +23,20 @@ export const UserContext = React.createContext<UserContextState>({
 
 export const UserContextProvider: React.FC<{children: ReactElement}> = ({children}) => {
 	const [token, setToken] = useState<string | null>(getTokenFromStorage)
-	const [isDoctor, setDoctorIndo] = useState<string | null>(getDoctorInfoStorage)
+	const [isDoctor, setIsDoctor] = useState<boolean | null>(getDoctorInfoStorage)
 
 	const logIn = (token: string, isDoctor: string) => {
 		localStorage.setItem("token", token);
 		localStorage.setItem("isDoctor", isDoctor);
 		setToken(token);
+		setIsDoctor(isDoctor === "True")
 	}
 
 	const logOut = () => {
 		localStorage.removeItem("token");
 		localStorage.removeItem("isDoctor");
 		setToken(null);
+		setIsDoctor(null);
 	}
 
 
