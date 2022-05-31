@@ -52,6 +52,12 @@ const getVisitsDoctor = (from: Moment): Promise<Visit[]> => {
         })))
 }
 
+const scheduleVisit = (visitId: number, petId: number): Promise<AxiosResponse> => {
+    return axios.put(`/visits/${visitId}`, {
+        petId
+    })
+}
+
 
 const cancelVisit = (id: number): Promise<AxiosResponse> => {
     return axios.delete(`/visits/${id}`)
@@ -63,4 +69,5 @@ export const visitsApi = {
     getVisits,
     getVisitsDoctor,
     cancelVisit,
+    scheduleVisit
 }

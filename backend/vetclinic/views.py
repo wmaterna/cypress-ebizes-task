@@ -231,32 +231,32 @@ def get_visits_view(request, doctor_id):
         start_date = datetime.date(date_from[0], date_from[1], date_from[2])
         end_date = datetime.date(date_to[0], date_to[1], date_to[2])
 
-        visits = None
-        try:
-            if request.user.is_doctor:
-                visits = Visit.objects.filter(
-                    doctor=doctor_id
-                ).filter(
-                    date__gte=start_date
-                ).filter(
-                    date__lt=end_date
-                ).exclude(
-                    animal_id=None
-                )
-        # TODO: Only serve logged in users?
-        except AttributeError:
-            pass  # pass this if when user is not authenticated
+        # visits = None
+        # try:
+        #     if request.user.is_doctor:
+        #         visits = Visit.objects.filter(
+        #             doctor=doctor_id
+        #         ).filter(
+        #             date__gte=start_date
+        #         ).filter(
+        #             date__lt=end_date
+        #         ).exclude(
+        #             animal_id=None
+        #         )
+        # # TODO: Only serve logged in users?
+        # except AttributeError:
+        #     pass  # pass this if when user is not authenticated
 
-        if visits is None:
-            visits = Visit.objects.filter(
-                doctor_id=doctor_id
-            ).filter(
-                date__gte=start_date
-            ).filter(
-                date__lte=end_date
-            ).filter(
-                animal_id=None
-            )
+        # if visits is None:
+        visits = Visit.objects.filter(
+            doctor_id=doctor_id
+        ).filter(
+            date__gte=start_date
+        ).filter(
+            date__lte=end_date
+        ).filter(
+            animal_id=None
+        )
 
         data = list(visits.values())
         return JsonResponse(data, safe=False)

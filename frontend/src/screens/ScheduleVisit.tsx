@@ -19,6 +19,10 @@ import {visitsApi} from "../api/visits.api";
 import VisitTimePicker from "../components/VisitTimePicker/VisitTimePicker";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import {UserPet} from "../types/animals.types";
+import {animalsApi} from "../api/animals.api";
+import {useSnackbar} from "notistack";
+import {useNavigate} from "react-router";
 
 
 const CustomSelect: React.FC<SelectProps> = ({label, value, onChange, children, ...props}) => (
@@ -44,23 +48,31 @@ const ScheduleVisit: React.FC = () => {
     const [selectedDate, setSelectedDate] = useState<Moment>(moment());
     const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
     const [doctors, setDoctors] = useState<Doctor[]>([]);
-    const [visits, setVisits] = useState<Visit[]>([])
+    const [visits, setVisits] = useState<Visit[]>([]);
+    const [pets, setPets] = useState<UserPet[]>([]);
+    const [selectedPetId, setSelectedPetId] = useState<number | "">("")
+
+    const {enqueueSnackbar} = useSnackbar();
+
+    const navigate = useNavigate()
 
     useEffect(() => {
         doctorsApi.getAllDoctors().then(res => setDoctors(res));
+        animalsApi.getUserPets().then(res => setPets(res));
     }, [])
 
     useEffect(() => {
-        if (doctorId !== "") {
+        loadVisits();
+        setSelectedVisitId(null)
+    }, [selectedDate, doctorId])
 
+    const loadVisits = () => {
+        if (doctorId !== "") {
             visitsApi
                 .getVisits(doctorId, moment(selectedDate).startOf("week"), moment(selectedDate).endOf("week"))
                 .then(res => setVisits(res));
         }
-
-        setSelectedVisitId(null)
-    }, [selectedDate, doctorId])
-
+    }
 
     const datesMap: DailyVisits[] = useMemo(() => {
         const start = moment(selectedDate).startOf("week");
@@ -89,6 +101,18 @@ const ScheduleVisit: React.FC = () => {
         }
     }, []);
 
+    const handleScheduleVisit = () => {
+        if (selectedVisitId && selectedPetId !== "") {
+            visitsApi.scheduleVisit(selectedVisitId, selectedPetId)
+                .then(
+                    () => {
+                        enqueueSnackbar("Umówiono na wizytę", {variant: "success"})
+                        navigate("/dashboard/visitsPlan")
+                    },
+                    () => enqueueSnackbar("Nie udało się umówić")
+                )
+        }
+    }
 
     return (
         <div style={{width: "68%", marginLeft: "25%", padding: "5%"}}>
@@ -97,7 +121,7 @@ const ScheduleVisit: React.FC = () => {
             </Typography>
 
             <Grid container sx={{marginTop: 5}} gap={5}>
-                <Grid item sm={4}>
+                <Grid item sm={3}>
                     <CustomSelect
                         label="Lekarz"
                         onChange={e => setDoctorId(e.target.value !== "" ? e.target.value as number : "")}
@@ -111,12 +135,26 @@ const ScheduleVisit: React.FC = () => {
                     </CustomSelect>
                 </Grid>
 
-                <Grid item sm={5}>
+                <Grid item sm={3}>
+                    <CustomSelect
+                        label="Zwierzak"
+                        onChange={e => setSelectedPetId(e.target.value !== "" ? e.target.value as number : "")}
+                        value={selectedPetId}
+                    >
+                        {pets.map(({id, name}) => (
+                            <MenuItem key={id} value={id}>{name}</MenuItem>
+                        ))}
+                    </CustomSelect>
+                </Grid>
+
+                <Grid item sm={3}>
                     <Grid container justifyContent="end">
                         <Button
                             variant="contained"
                             disableElevation
                             size="large"
+                            disabled={(!selectedVisitId || selectedPetId === "" || isNaN(selectedPetId))}
+                            onClick={handleScheduleVisit}
                         >
                             Zaplanuj wizytę
                         </Button>
@@ -125,7 +163,7 @@ const ScheduleVisit: React.FC = () => {
             </Grid>
 
             <Grid container sx={{marginTop: 5}} gap={5}>
-                <Grid item sm={4}>
+                <Grid item sm={3}>
                     <WeekPicker
                         label="Data"
                         date={selectedDate}

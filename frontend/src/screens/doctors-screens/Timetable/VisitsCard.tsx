@@ -19,7 +19,6 @@ interface CardInfo {
 const VisitHistoryCard: (props: CardInfo) => JSX.Element = ({visit, isDoctor, cancelVisitFn}) => {
 
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
-
     return (
         <Box sx={{ minWidth: 275 }}>
           <Card variant="outlined">
@@ -31,7 +30,7 @@ const VisitHistoryCard: (props: CardInfo) => JSX.Element = ({visit, isDoctor, ca
                     >
                       <Grid item xs={10}>
                           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-                              {visit.date.format("YYYY-MM-DD HH:mm")}
+                              {visit.date?.format("YYYY-MM-DD HH:mm")}
                           </Typography>
                           <Typography variant="h5" component="div">
                               <b>{visit.animal.name}</b>
