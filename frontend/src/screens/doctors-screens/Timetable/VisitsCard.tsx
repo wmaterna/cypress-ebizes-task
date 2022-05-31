@@ -14,7 +14,7 @@ interface CardInfo{
     isDoctor: boolean,
 }
 
-const VisitsCard: (props: CardInfo) => JSX.Element = (props: CardInfo) => {
+const VisitHistoryCard: (props: CardInfo) => JSX.Element = (props: CardInfo) => {
 
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
 
@@ -53,4 +53,4 @@ const VisitsCard: (props: CardInfo) => JSX.Element = (props: CardInfo) => {
     )
 }
 
-export default VisitsCard;
+export default VisitHistoryCard;

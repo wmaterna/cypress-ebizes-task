@@ -17,6 +17,7 @@ import UserSetupScreen from "./screens/UserSteupScreen";
 
 import "moment/locale/pl"
 import moment from "moment";
+import DocVisitsHistory from "./screens/doctors-screens/VisitsHistory/DocVisitHistory";
 
 
 
@@ -43,6 +44,7 @@ const App: React.FC = () => {
                                     <Route path="/dashboard/doc-timetable" element={<DoctorsTimetable/>} />
                                     <Route path="/dashboard/visitsPlan" element={<VisitsPlanUser />}/>
                                     <Route path="/dashboard/user-setup" element={<UserSetupScreen />} />
+                                    <Route path="/dashboard/doc-history" element={<DocVisitsHistory />} />
                                 </Route>
                             )}
 
