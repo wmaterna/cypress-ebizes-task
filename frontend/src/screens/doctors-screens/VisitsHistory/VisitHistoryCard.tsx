@@ -8,11 +8,12 @@ import Typography from '@mui/material/Typography';
 import {Dialog, DialogContent, DialogActions, DialogTitle, Grid, TextField} from "@mui/material";
 import {visitsApi} from "../../../api/visits.api";
 import LinearProgress from "@mui/material/LinearProgress";
+import { Moment } from "moment";
 
 
 interface CardInfo {
     id: number;
-    visit_date: string,
+    visit_date: Moment,
     petName: string,
     isDoctor: boolean,
     note: string,
@@ -53,7 +54,7 @@ const VisitsCard: (props: CardInfo) => JSX.Element = (props: CardInfo) => {
                     >
                         <Grid item xs={10}>
                             <Typography sx={{fontSize: 14}} color="text.secondary" gutterBottom>
-                                {props.visit_date}
+                                {props.visit_date?.format("YYYY-MM-DD HH:mm")}
                             </Typography>
                             <Typography variant="h5" component="div">
                                 <b>{props.petName}</b>
@@ -67,7 +68,7 @@ const VisitsCard: (props: CardInfo) => JSX.Element = (props: CardInfo) => {
                         </Grid>
                         <Grid item xs={2}>
                             <CardActions>
-                                {props.note.length > 0 ?
+                                {props.note?.length > 0 ?
                                     <Button size="small" onClick={() => setSeeNoteDialogOpen(true)}>Zobacz
                                         notatkę</Button>
                                     :

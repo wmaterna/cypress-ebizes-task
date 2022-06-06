@@ -1,6 +1,7 @@
 import axios from "../config/axios.config";
 import {Doctor} from "../types";
 import {DoctorsVisit} from "../types/doctorsvisit";
+import { AxiosResponse } from "axios";
 
 // const doctors: Doctor[] = [
 //     {
@@ -27,7 +28,7 @@ const getAllDoctors = (): Promise<Doctor[]> => {
     return axios.get("/doctors").then(res => res.data)   // when backend will work
     // return Promise.resolve(doctors);
 }
-const postDoctorVisit = (doctorVisit: DoctorsVisit) => {
+const postDoctorVisit = (doctorVisit: DoctorsVisit) : Promise<AxiosResponse> => {
     return axios.post("/visits/add/", doctorVisit);
 }
 

@@ -58,7 +58,7 @@ const DocVisitsHistory: React.FC = () => {
                             {visits.map((visit) => {
                                 return (
                                     <VisitHistoryCard key={visit.id} id={visit.id}
-                                                      visit_date={visit.date.toString()}
+                                                      visit_date={visit.date}
                                                       petName={visit.animal.name} isDoctor={true} note={visit.note}
                                                       refreshList={refreshList}
                                     />

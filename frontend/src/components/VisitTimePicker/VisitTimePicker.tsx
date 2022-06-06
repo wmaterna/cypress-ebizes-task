@@ -1,6 +1,7 @@
 import React from "react";
 import {Box, Button, Divider, Grid, Typography} from "@mui/material";
 import {DailyVisits} from "../../types";
+import moment from "moment";
 
 
 
@@ -28,23 +29,27 @@ const VisitTimePicker: React.FC<VisitTimePickerProps> = ({dayAndVisits, selected
         <Grid item sm={12}>
             <Grid container justifyContent="center" justifyItems="center" height="100%">
                 {dayAndVisits.visits?.length ? (
-                    dayAndVisits.visits.map(({id, date}) => (
-                        <Grid key={id} >
-                            <Button
-                                disableElevation
-                                variant={selectedVisit === id ? "contained" : "text"}
-                                onClick={() => selectVisit(id)}
-                                color={selectedVisit === id ? "primary" : "secondary"}
-                            >
-                                {date.format("HH:mm")}
-                            </Button>
-                        </Grid>
-                    ))
-                ) : (
-                    <Typography textAlign="center">
-                        Brak <br/> wolnyh <br/> terminów
-                    </Typography>
-                )}
+                    dayAndVisits.visits
+                        .sort((a, b) => a.date.isBefore(b.date) ? -1 : 1)
+                        .filter(({date}) => date.isAfter(moment()))
+                        .map(({id, date}) => (
+                            <Grid key={id} >
+                                <Button
+                                    disableElevation
+                                    disabled={moment().isAfter(date)}
+                                    variant={selectedVisit === id ? "contained" : "text"}
+                                    onClick={() => selectVisit(id)}
+                                    color={selectedVisit === id ? "primary" : "secondary"}
+                                >
+                                    {date.format("HH:mm")}
+                                </Button>
+                            </Grid>
+                        ))
+                    ) : (
+                        <Typography textAlign="center">
+                            Brak <br/> wolnych <br/> terminów
+                        </Typography>
+                    )}
             </Grid>
         </Grid>
     </Grid>
