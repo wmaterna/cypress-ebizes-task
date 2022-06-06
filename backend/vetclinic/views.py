@@ -124,7 +124,6 @@ def add_visits_view(request):
                     repeat[i] = 6
                 else:
                     return JsonResponse({'success': False, 'error': 'Invalid weekday'}, status=400)
-
         except JSONDecodeError:
             return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
         except KeyError:

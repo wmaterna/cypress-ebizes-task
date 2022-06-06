@@ -48,6 +48,7 @@ const DoctorsTimetable: React.FC = () => {
                     <DatePicker
                         label="Data"
                         value={date}
+                        disablePast
                         onChange={(e) => {
                             if (e !== null){
                                 setDate(e)

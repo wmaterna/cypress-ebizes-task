@@ -30,40 +30,46 @@ const MyVisitsHistory: React.FC<props> = () => {
 
     return (
         <div className="user-animals">
-            {
-                userVisitsHistory.map((visit: Visit, index: number) => (
-                    <Card key={index} className="animals-list">
-                        <CardContent>
-                            <Grid container
-                          direction="row"
-                          justifyContent="center"
-                          alignItems="center"
-                    >
-                                <Grid item xs={10}>
-                            <Typography variant="h5" gutterBottom>
-                                {visit.animal.name}
-                            </Typography>
-                            <Typography color="text.secondary">
-                                {visit.date}
-                            </Typography >
-                            </Grid>
-                            <Grid item xs={2}>
-                                <CardActions>
-                                  <Button onClick={() => handleOpenNote(index)} size="small">Notatka</Button>
-                                </CardActions>
-                                <Dialog open={noteOpen} onClose={() => setNoteOpen(false)}>
-                                    <DialogTitle>Notatka pozostawiona przez lekarza po spotkaniu</DialogTitle>
-                                        <DialogContent>
-                                            {userVisitsHistory[currentIndex].note}
-                                        </DialogContent>
-                                </Dialog>
-                      </Grid>
-                    </Grid>
+            {userVisitsHistory.length ? (
+                <>
+                    {userVisitsHistory.map((visit: Visit, index: number) => (
+                        <Card key={index} className="animals-list">
+                            <CardContent>
+                                <Grid container
+                                      direction="row"
+                                      justifyContent="center"
+                                      alignItems="center"
+                                >
+                                    <Grid item xs={10}>
+                                        <Typography variant="h5" gutterBottom>
+                                            {visit.animal.name}
+                                        </Typography>
+                                        <Typography color="text.secondary">
+                                            {visit.date}
+                                        </Typography >
+                                    </Grid>
+                                    <Grid item xs={2}>
+                                        <CardActions>
+                                            <Button onClick={() => handleOpenNote(index)} size="small">Notatka</Button>
+                                        </CardActions>
+                                        <Dialog open={noteOpen} onClose={() => setNoteOpen(false)}>
+                                            <DialogTitle>Notatka pozostawiona przez lekarza po spotkaniu</DialogTitle>
+                                            <DialogContent>
+                                                {userVisitsHistory[currentIndex].note}
+                                            </DialogContent>
+                                        </Dialog>
+                                    </Grid>
+                                </Grid>
                             </CardContent >
-                    </Card >
+                        </Card >
 
-                ))
-            }
+                    ))}
+                </>
+            ) : (
+                <Typography>
+                    Brak wizyt
+                </Typography>
+            )}
         </div>
     )
 }

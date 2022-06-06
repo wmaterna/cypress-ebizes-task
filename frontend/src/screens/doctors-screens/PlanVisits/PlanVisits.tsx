@@ -1,12 +1,10 @@
-import React, {useCallback, useEffect, useMemo, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {
     Button,
-    Grid, IconButton,
+    Grid, InputAdornment,
     Typography
 } from "@mui/material";
 import moment, {Moment} from "moment";
-import { format } from 'date-fns';
-import DatePicker from "react-datepicker";
 import {doctorsApi} from "../../../api/doctors.api";
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
@@ -18,12 +16,14 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import {DoctorsVisit} from "../../../types/doctorsvisit";
 import "react-datepicker/dist/react-datepicker.css";
 import "./PlanVisits.css";
+import { DatePicker } from "@mui/x-date-pickers";
+import { log } from "util";
+import { useSnackbar } from "notistack";
 
 
 const PlanVisits: React.FC = () => {
-    const [selectedDateFrom, setSelectedDateFrom] = useState<Date>(new Date(2022,3,17));
-    const [selectDateTo, setSelectDateTo] = useState<Date>(new Date(2022,3,17));
-    const [selectedVisitId, setSelectedVisitId] = useState<number | null>(null);
+    const [selectedDateFrom, setSelectedDateFrom] = useState<Moment>(moment());
+    const [selectDateTo, setSelectDateTo] = useState<Moment>(moment());
     const [selectHourForm, setSelectHourFrom] = useState<string>('8:00')
     const [selectHourTo, setSelectHourTo] = useState<string>('18:00');
     const timeRegex = /^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/
@@ -33,6 +33,7 @@ const PlanVisits: React.FC = () => {
     const [breakTime, setBreakTime] = useState<string>('5');
     const [days, setDays] = useState<string[]>([]);
 
+    const {enqueueSnackbar} = useSnackbar()
 
     useEffect(() => {
         if(selectHourTo.match(timeRegex)){
@@ -49,29 +50,16 @@ const PlanVisits: React.FC = () => {
             setErrorHourFrom(true)
         }
     },[selectHourForm])
-console.log(selectedDateFrom.getUTCDate())
-     const handleDays = (
-            event: React.MouseEvent<HTMLElement>,
-            newFormats: string[],
-          ) => {
+
+    const handleDays = (event: React.MouseEvent<HTMLElement>, newFormats: string[]) => {
             setDays(newFormats);
     };
-    function padTo2Digits(num: number) {
-      return num.toString().padStart(2, '0');
-    }
 
-    function formatDate(date: Date) {
-              return [
-                date.getFullYear(),
-                padTo2Digits(date.getMonth() + 1),
-                padTo2Digits(date.getDate()),
-              ].join('-');
-        }
 
     const handleClick = () => {
         let visit: DoctorsVisit = {
-            dateFrom: formatDate(selectedDateFrom),
-            dateTo: formatDate(selectDateTo),
+            dateFrom: selectedDateFrom.format("YYYY-MM-DD"),
+            dateTo: selectDateTo.format("YYYY-MM-DD"),
             timeFrom: selectHourForm,
             timeTo: selectHourTo,
             visitTime: appointmentTime,
@@ -79,6 +67,10 @@ console.log(selectedDateFrom.getUTCDate())
             repeatEvery: days,
         }
         doctorsApi.postDoctorVisit(visit)
+            .then(
+                res => enqueueSnackbar("Zaplanowano wizyty", {variant: "success"}),
+                reason => enqueueSnackbar("Nie udało się zaplanować wizyt", {variant: "error"})
+            )
     }
 
 
@@ -91,9 +83,13 @@ console.log(selectedDateFrom.getUTCDate())
             <Grid container sx={{marginTop: 5}} gap={5}>
                 <Grid item sm={4}>
                     <DatePicker
-                        wrapperClassName="datePicker"
-                          selected={selectedDateFrom}
-                          onChange={(date: Date) => setSelectedDateFrom(date)} />
+                        label="Data od"
+                        value={selectedDateFrom}
+                        onChange={e => {
+                            if (e !== null) { setSelectedDateFrom(e) }
+                        }}
+                        renderInput={(props) => <TextField fullWidth {...props} />}
+                    />
                 </Grid>
                 <Grid item sm={4}>
                     <TextField style={{width: "100%"}} error={errorHourFrom} label="Od godz" value={selectHourForm} onChange={(e: any) => setSelectHourFrom(e.target.value)} />
@@ -103,9 +99,13 @@ console.log(selectedDateFrom.getUTCDate())
             <Grid container sx={{marginTop: 5}} gap={5}>
                 <Grid item sm={4}>
                     <DatePicker
-                        wrapperClassName="datePicker"
-                          selected={selectDateTo}
-                          onChange={(date: Date) => setSelectDateTo(date)} />
+                        label="Data do"
+                        value={selectDateTo}
+                        onChange={e => {
+                            if (e !== null) { setSelectDateTo(e) }
+                        }}
+                        renderInput={(props) => <TextField fullWidth {...props} />}
+                    />
                 </Grid>
                 <Grid item sm={4}>
                     <TextField style={{width: "100%"}} error={errorHourTo} label="Do godz" value={selectHourTo} onChange={(e:any) => setSelectHourTo(e.target.value)}/>
@@ -121,6 +121,11 @@ console.log(selectedDateFrom.getUTCDate())
                           value={appointmentTime}
                           label="Długość wiyty"
                           onChange={(event: SelectChangeEvent) => {setAppointmentTime(event.target.value as string)}}
+                          startAdornment={
+                            <InputAdornment sx={{marginRight: 2}} position="end">
+                                min.
+                            </InputAdornment>
+                          }
                         >
                           <MenuItem value={5}>5</MenuItem>
                           <MenuItem value={10}>10</MenuItem>
@@ -137,6 +142,11 @@ console.log(selectedDateFrom.getUTCDate())
                           value={breakTime}
                           label="Długość przerwy"
                           onChange={(event: SelectChangeEvent) => {setBreakTime(event.target.value as string)}}
+                          startAdornment={
+                              <InputAdornment sx={{marginRight: 2}} position="end">
+                                  min.
+                              </InputAdornment>
+                          }
                         >
                           <MenuItem value={5}>5</MenuItem>
                           <MenuItem value={10}>10</MenuItem>

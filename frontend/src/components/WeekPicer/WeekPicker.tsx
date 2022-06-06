@@ -83,6 +83,7 @@ const WeekPicker: React.FC<WeekPickerProps> = ({label, date, onChange}) => {
 				label={label}
 				value={date.toDate()}
 				onChange={(newValue) => onChange(moment(newValue))}
+				disablePast
 				renderDay={renderWeekPickerDay}
 				renderInput={(params) => <TextField {...params} sx={{width: "100%"}}/>}
 				inputFormat={`${date.startOf("week").get("D")} - ${date.endOf("week").get("D")}.MM.yyyy`}
