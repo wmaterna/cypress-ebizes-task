@@ -26,36 +26,31 @@ moment.locale("pl")
 const App: React.FC = () => {
     const {token} = useContext(UserContext);
     return (
+            <>
+                <Navbar />
+                <Sidebar token={token}/>
+                <Routes>
+                    <Route path="/">
+                        <Route path="/signUp" element={<SignUp/>}/>
+                        <Route path="/signIn" element={<SignIn/>}/>
 
-        <Router>
-            <AppContextProvider>
-                <>
-                    <Navbar />
-                    <Sidebar token={token}/>
-                    <Routes>
-                        <Route path="/">
-                            <Route path="/signUp" element={<SignUp/>}/>
-                            <Route path="/signIn" element={<SignIn/>}/>
+                        {token && (
+                            <>
+                                <Route path="/dashboard/animals" element={<Animals/>}/>
+                                <Route path="/dashboard/scheduleVisit" element={<ScheduleVisit/>}/>
+                                <Route path="/dashboard/doc-addVisits" element={<PlanVisits/>} />
+                                <Route path="/dashboard/doc-timetable" element={<DoctorsTimetable/>} />
+                                <Route path="/dashboard/visitsPlan" element={<VisitsPlanUser />}/>
+                                <Route path="/dashboard/user-setup" element={<UserSetupScreen />} />
+                                <Route path="/dashboard/doc-history" element={<DocVisitsHistory />} />
+                            </>
+                        )}
 
-                            {token && (
-                                <>
-                                    <Route path="/dashboard/animals" element={<Animals/>}/>
-                                    <Route path="/dashboard/scheduleVisit" element={<ScheduleVisit/>}/>
-                                    <Route path="/dashboard/doc-addVisits" element={<PlanVisits/>} />
-                                    <Route path="/dashboard/doc-timetable" element={<DoctorsTimetable/>} />
-                                    <Route path="/dashboard/visitsPlan" element={<VisitsPlanUser />}/>
-                                    <Route path="/dashboard/user-setup" element={<UserSetupScreen />} />
-                                    <Route path="/dashboard/doc-history" element={<DocVisitsHistory />} />
-                                </>
-                            )}
-
-                            <Route index element={<HelloComponent/>}/>
-                        </Route>
-                        {/*<Route path="/" element={<HelloComponent/>}/>*/}
-                    </Routes>
-                </>
-            </AppContextProvider>
-        </Router>
+                        <Route index element={<HelloComponent/>}/>
+                    </Route>
+                    {/*<Route path="/" element={<HelloComponent/>}/>*/}
+                </Routes>
+            </>
     );
 }
 
