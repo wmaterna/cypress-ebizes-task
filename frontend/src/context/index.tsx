@@ -10,11 +10,14 @@ import {SnackbarProvider} from "notistack";
 const theme = createTheme({
 	palette: {
 		primary: {
-			main: "#80cbc4",
-			light: "#b2fef7",
-			dark: "#4f9a94",
+			main: "#64b5f6",
+			light: "#a8d3ef",
+			dark: "#2666ab",
 			contrastText: "#000"
-		}
+		},
+		secondary: {
+			main: '#ffab91',
+		},
 	}
 })
 

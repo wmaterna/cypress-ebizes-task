@@ -72,6 +72,7 @@ const Animals: React.FC<props> = () => {
 
     const handleClose = () => {
         setOpen(false);
+        clearForm();
     };
 
     const isValidForm = (): boolean => {
@@ -117,6 +118,17 @@ const Animals: React.FC<props> = () => {
         animalsApi.getUserPets().then((res: UserPet[]) => setUserAnimals(res));
     }
 
+    const clearForm = () => {
+        setName("");
+        setWeight(10);
+        setHeight(10);
+        setRace("");
+        setSpecies('2');
+        setAdditionalSpecies("");
+        setName("");
+        setDateOfBirth(new Date('2022-01-01T21:11:54'));
+    }
+
     useEffect(() => {
         getAnimalsList()
     }, [])
@@ -140,7 +152,8 @@ const Animals: React.FC<props> = () => {
             }).then(() => {
                 getAnimalsList()
                 setOpen(false);
-                setServerError("")
+                clearForm();
+                setServerError("");
                 setIsButtonDisabled(false);
                 setIsLoading(false);
             }, () => {

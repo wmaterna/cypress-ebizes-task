@@ -47,31 +47,31 @@ export default function Navbar() {
                                     <Button
                                         onClick={isDoctor ? () => handleNavigate("/dashboard/doc-timetable") : () => handleNavigate("/dashboard/animals")}
                                         variant="outlined"
-                                        color="secondary"
+                                        color="inherit"
                                         sx={{marginRight: 5}}>
                                         Panel użytkownika
                                     </Button>
                                     <Button
                                         onClick={handleUserAccount}
                                         variant="outlined"
-                                        color="secondary"
+                                        color="inherit"
                                         sx={{marginRight: 5}}>
                                         Konto użytkownika
                                     </Button>
                                     <Button
                                         onClick={handleLogoutClick}
                                         variant="outlined"
-                                        color="secondary">
+                                        color="inherit">
                                         Wyloguj
                                     </Button>
                                 </Grid>
                         ) : (
                             <Grid>
-                                <Button variant="outlined" component={RouterLink} to={"/signIn"} color="secondary"
+                                <Button variant="outlined" component={RouterLink} to={"/signIn"} color="inherit"
                                         sx={{marginRight: 5}}>
                                     Zaloguj
                                 </Button>
-                                <Button variant="outlined" component={RouterLink} to="/signUp" color="secondary">
+                                <Button variant="outlined" component={RouterLink} to="/signUp" color="inherit">
                                     Załóż konto
                                 </Button>
                             </Grid>
