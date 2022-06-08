@@ -45,7 +45,7 @@ def register_view(request):
                 user.save()
                 return JsonResponse({'success': True})
         except IntegrityError:
-            print('Error: Email exist in database')
+            # print('Error: Email exist in database')
             return JsonResponse({'success': False, 'error': 'User already exist'}, status=500)
 
 
@@ -54,8 +54,12 @@ def register_view(request):
 def frontpage_view(request):
     return HttpResponse('''
     /admin admin@admin.com:admin <br>
-    /login test@test.com:TestPass123 <br>
-    /register new user''')
+    /login <br>
+    magdalena@stefanowicz.com:MagdalenaStefanowicz123 <br>
+    dariusz@koczur.com:DariuszKoczur123 <br>
+    agnieszka@adamczyk.com:AgnieszkaAdamczyk123 <br>
+    adamnowak@gmail.com:AdamNowak123 <br>
+    ''')
 
 
 @csrf_exempt
@@ -65,18 +69,18 @@ def login_view(request):
         data = json.loads(request.body)
         username = data['email']
         password = data['password']
-        print(f'{username} : {password}')
+        # print(f'{username} : {password}')
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            print('Login successful')
+            # print('Login successful')
             if user.is_doctor:
                 is_doctor = True
             else:
                 is_doctor = False
             return JsonResponse({'success': True, 'isDoctor': str(is_doctor)})
         else:
-            print('Login failed')
+            # print('Login failed')
             return JsonResponse({'success': False, 'error': 'Username and password combination incorrect'}, status=401)
 
 
@@ -88,7 +92,7 @@ def loggedin_view(request):
 
 @csrf_exempt
 def logout_view(request):
-    print('Loging out')
+    # print('Loging out')
     logout(request)
     return JsonResponse({'success': True})
 
@@ -174,11 +178,9 @@ def add_visits_view(request):
                         )
 
                         if not visit:
-                            print(f'Adding {date_time}')
+                            # print(f'Adding {date_time}')
                             visit = Visit.objects.create(date=date_time, doctor=doctor)
                             visit.save()
-                        else:
-                            print(f'Skipping {date_time}')
 
                         minutes += visit_time + break_time
                     minutes -= 60
@@ -199,11 +201,11 @@ def add_visits_view(request):
                     )
 
                     if not visit:
-                        print(f'Adding {date_time}')
+                        # print(f'Adding {date_time}')
                         visit = Visit.objects.create(date=date_time, doctor=doctor)
                         visit.save()
-                    else:
-                        print(f'Skipping {date_time}')
+                    # else:
+                        # print(f'Skipping {date_time}')
 
                     minutes += visit_time + break_time
 
@@ -315,7 +317,7 @@ def get_doctors_view(request):
 def add_animal_view(request):
     if request.method == "POST":
         try:
-            print(request.body)
+            # print(request.body)
             body = json.loads(request.body)
 
             res = check_if_all_not_none(body, ["name", "weight", "height", "dateOfBirth"])
@@ -328,7 +330,7 @@ def add_animal_view(request):
                 height=float(body["height"]),
                 user=request.user
             )
-            print(type(body))
+            # print(type(body))
 
             if is_not_none(body, "speciesId"):
                 animal.species_id = int(body["speciesId"])
