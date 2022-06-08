@@ -290,10 +290,10 @@ def get_scheduled_visits_view(request):
             return JsonResponse(visits, safe=False)
         else:
             animals = list(Animal.objects.filter(user=request.user).values())
-            visits = Visit.objects.select_related("animal")\
-                .filter(animal__in=[x["id"] for x in animals])\
-                .filter(date__gte=datetime.date.today())\
-                .order_by("date")\
+            visits = Visit.objects.select_related("animal") \
+                .filter(animal__in=[x["id"] for x in animals]) \
+                .filter(date__gte=datetime.date.today()) \
+                .order_by("date") \
                 .values()
 
             visits = list(visits)
@@ -352,6 +352,7 @@ def add_animal_view(request):
             return JsonResponse({"message": "Created"}, status=201)
         except JSONDecodeError:
             return JsonResponse({"message": "Invalid body"}, status=400)
+
 
 @csrf_exempt
 def delete_animal_view(request: HttpRequest, id: int):
@@ -423,14 +424,14 @@ def get_animal_view(request):
         user_animals = Animal.objects.filter(user=request.user, is_deleted=False)
 
         return JsonResponse([{
-                'id': x.id,
-                'name': x.name,
-                'species': x.species.name if x.species is not None else None,
-                'race': x.race,
-                'weight': x.weight,
-                'height': x.height,
-                'dateOfBirth': x.date_of_birth,
-            } for x in user_animals], safe=False, status=200)
+            'id': x.id,
+            'name': x.name,
+            'species': x.species.name if x.species is not None else None,
+            'race': x.race,
+            'weight': x.weight,
+            'height': x.height,
+            'dateOfBirth': x.date_of_birth,
+        } for x in user_animals], safe=False, status=200)
 
 
 @csrf_exempt
@@ -444,7 +445,7 @@ def get_treatment_history(request: HttpRequest, pet_id: int) -> JsonResponse:
         if not visists:
             return JsonResponse({'message': 'no visits found'}, status=404)
         return JsonResponse([{'id': v.id, 'date': v.date, 'note': v.note} for v in visists], safe=False)
-      
+
 
 @csrf_exempt
 def add_note_view(request: HttpRequest, visit_id: int) -> JsonResponse:
@@ -458,7 +459,6 @@ def add_note_view(request: HttpRequest, visit_id: int) -> JsonResponse:
         visit[0].save()
         return JsonResponse({'message': 'Note added successfully'})
 
-      
 
 @csrf_exempt
 def get_species_view(request):
@@ -470,3 +470,17 @@ def get_species_view(request):
 
         return JsonResponse(list(species.values()), safe=False)
 
+
+@csrf_exempt
+def delete_user_view(request: HttpRequest, id: int):
+    if request.method == "GET":
+        try:
+            user = CustomUser.objects.get(id=id)
+            if not user.is_active:
+                return JsonResponse({"message": "User is not active"}, safe=False, status=400)
+            else:
+                user.is_active = False
+                user.save()
+            return JsonResponse(user.id, safe=False, status=200)
+        except:
+            return JsonResponse({"message": "delete error"}, safe=False, status=400)
