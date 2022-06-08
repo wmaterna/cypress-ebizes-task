@@ -17,7 +17,6 @@ export default function Navbar() {
         event.preventDefault();
         axios.post('/logout/').then(() => {
             logOut()
-            navigate("/");
         });
     }
 

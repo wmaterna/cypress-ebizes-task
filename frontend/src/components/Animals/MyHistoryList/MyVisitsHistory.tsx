@@ -19,9 +19,10 @@ const MyVisitsHistory: React.FC<props> = () => {
     const [userVisitsHistory, setUserVisitsHisory] = useState<Visit[]>([]);
     const [noteOpen, setNoteOpen] = useState<boolean>(false)
     const [currentIndex, setCurrentIndex] = useState<number>(0);
-    // useEffect(() => {
-    //     animalsApi.getVisits().then((res: PetVisits[]) => setUserVisitsHisory(res));
-    // }, [])
+
+    useEffect(() => {
+        animalsApi.getVisitsHistory().then((res: Visit[]) => setUserVisitsHisory(res));
+    }, [])
 
     const handleOpenNote = (index: number) => {
          setNoteOpen(true);
@@ -42,10 +43,10 @@ const MyVisitsHistory: React.FC<props> = () => {
                                 >
                                     <Grid item xs={10}>
                                         <Typography variant="h5" gutterBottom>
-                                            {visit.animal.name}
+                                            {visit.animal?.name}
                                         </Typography>
                                         <Typography color="text.secondary">
-                                            {visit.date}
+                                            {visit.date.format("YYYY-MM-DD HH:mm")}
                                         </Typography >
                                     </Grid>
                                     <Grid item xs={2}>

@@ -31,6 +31,17 @@ const getVisits = (): Promise<Visit[]> => {
     // return Promise.resolve(userVisits);
 }
 
+const getVisitsHistory = (): Promise<Visit[]> => {
+    return axios
+        .get('/pets/history')
+        .then(res => res.data)
+        .then((res: Visit[]) => res.map(v => ({
+            ...v,
+            date: moment(v.date)
+        })))
+    // return Promise.resolve(userVisits);
+}
+
 const deleteUser = (): Promise<number> => {
      return axios.delete(`/user`);
 }
@@ -41,5 +52,6 @@ export const animalsApi = {
     getUserPets,
     getVisits,
     deletePet,
-    deleteUser
+    deleteUser,
+    getVisitsHistory,
 }

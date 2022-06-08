@@ -439,16 +439,29 @@ def get_animal_view(request):
 
 
 @csrf_exempt
-def get_treatment_history(request: HttpRequest, pet_id: int) -> JsonResponse:
+def get_treatment_history(request: HttpRequest,) -> JsonResponse:
     if request.method == 'GET':
-        visists = Visit.objects.filter(
-            animal_id=pet_id
+        animals = list(Animal.objects.filter(user=request.user).values())
+
+        visists = Visit.objects.select_related("animal").filter(
+            animal_id__in=[x["id"] for x in animals]
         ).filter(
             date__lte=datetime.datetime.now()
-        )
+        ).order_by("-date").values()
+
+        visists = list(visists)
+
+        animal_ids = [x["animal_id"] for x in visists]
+
+        animals = list(Animal.objects.filter(pk__in=animal_ids).values())
+
+        for v in visists:
+            v["animal"] = find_animal(animals, v["animal_id"])
+
+
         if not visists:
             return JsonResponse({'message': 'no visits found'}, status=404)
-        return JsonResponse([{'id': v.id, 'date': v.date, 'note': v.note} for v in visists], safe=False)
+        return JsonResponse(visists, safe=False)
 
 
 @csrf_exempt
@@ -487,6 +500,32 @@ def delete_user_view(request: HttpRequest):
             else:
                 user.is_active = False
                 user.save()
-            return JsonResponse(user.id, safe=False, status=200)
+
+                animals = list(Animal.objects.filter(user=user).values())
+                visits = list(Visit.objects.filter(animal_id__in=[x["id"] for x in animals]))
+
+                for v in visits:
+                    v.animal = None
+
+                Visit.objects.bulk_update(visits, ["animal"])
+                return JsonResponse(user.id, safe=False, status=200)
         except:
             return JsonResponse({"message": "delete error"}, safe=False, status=400)
+
+
+@csrf_exempt
+def change_password_view(request: HttpRequest) -> JsonResponse:
+    if request.user is None:
+        return JsonResponse({}, status=401)
+
+    if request.method == "PUT":
+        password = json.loads(request.body)["password"]
+
+        user = request.user
+        user.set_password(password)
+        user.save()
+
+
+        return JsonResponse({"message": "Password changed!"}, status=200)
+
+
