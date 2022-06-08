@@ -11,7 +11,7 @@ export default function Navbar() {
     const theme = useTheme();
     const {logOut, token} = useContext(UserContext)
     const navigate = useNavigate();
-    const [isDoctor, setIsDoctor] = useState(localStorage.getItem("isDoctor") === 'True');
+    const {isDoctor} = useContext(UserContext)
 
     const handleLogoutClick = (event: any) => {
         event.preventDefault();
