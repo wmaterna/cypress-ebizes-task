@@ -46,7 +46,7 @@ const Sidebar: React.FC<Sidebarprops> = ({token}) => {
         >
             <MenuList>
                 <MenuItem>
-                    {isDoctor ? <span>Doctor's profile</span> : <span>User's profile</span>}
+                    {isDoctor ? <span>Profil Lekarza</span> : <span>Profil Użytkownika</span>}
                 </MenuItem>
                  <Divider />
                 <MenuItem onClick={ isDoctor ? () => handleClick("/dashboard/doc-timetable") : () => handleClick("/dashboard/animals")}>

@@ -5,9 +5,10 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import {Grid} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, Grid} from "@mui/material";
 import {Visit} from "../../../types";
 import {visitsApi} from "../../../api/visits.api";
+import LinearProgress from "@mui/material/LinearProgress";
 
 
 interface CardInfo {
@@ -19,6 +20,12 @@ interface CardInfo {
 const VisitHistoryCard: (props: CardInfo) => JSX.Element = ({visit, isDoctor, cancelVisitFn}) => {
 
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+
+
+    const handleCancelDialog = () => {
+        cancelVisitFn(visit.id);
+        setCancelDialogOpen(false);
+    }
     return (
         <Box sx={{ minWidth: 275 }}>
           <Card variant="outlined">
@@ -44,11 +51,18 @@ const VisitHistoryCard: (props: CardInfo) => JSX.Element = ({visit, isDoctor, ca
                       </Grid>
                       <Grid item xs={2}>
                         <CardActions>
-                          <Button size="small" onClick={() => cancelVisitFn(visit.id)}>Cancel Visit</Button>
+                          <Button size="small" onClick={() => setCancelDialogOpen(true)}>Anuluj wizytę</Button>
                         </CardActions>
                       </Grid>
                   </Grid>
                 </CardContent>
+              <Dialog open={cancelDialogOpen}>
+                    <DialogTitle>Czy jesteś pewien, że chcesz anulować wizytę</DialogTitle>
+                  <DialogActions>
+                        <Button size="small" onClick={() => setCancelDialogOpen(false)}>Zamknij</Button>
+                        <Button size="small" onClick={() => handleCancelDialog()}>Anuluj wizytę</Button>
+                  </DialogActions>
+                </Dialog>
           </Card>
     </Box>
     )

@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from "react";
+import React, {useCallback, useContext, useEffect, useMemo, useState} from "react";
 import VisitsCard from "./doctors-screens/Timetable/VisitsCard";
 import {Dialog, DialogContent, DialogTitle, Typography, DialogActions} from "@mui/material";
 import {Grid} from "@mui/material"
@@ -6,20 +6,35 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import Box from "@mui/material/Box";
+import {animalsApi} from "../api/animals.api";
+import {useNavigate} from "react-router";
+import {UserContext} from "../context/UserContext";
 
 
  const UserSetupScreen: React.FC = () => {
 
+    const navigate = useNavigate();
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [formValid, setFormValid] = useState(false);
     const [deleteDialog, setDeleteDialogOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [serverError, setServerError] = useState("");
+    const {logOut} = useContext(UserContext);
 
     const handleAgree = () => {
         setDeleteDialogOpen(false)
-        //wysylamy request do usuinecia konta, wylogowujemy, przenosimy na stronę główna
+        setIsLoading(true);
+        animalsApi.deleteUser().then(
+            () => {
+                setIsLoading(false);
+                logOut();
+                navigate("/")
+            }, () => {
+                setIsLoading(false);
+                setServerError("Wystąpił błąd, odśwież stronę i spróbuj jeszcze raz.")
+            })
      }
-
 
 
     useEffect(() => {

@@ -40,6 +40,6 @@ urlpatterns = [
     path('pets/<int:pet_id>/history', views.get_treatment_history),
     path('visits/<int:visit_id>/addnote', views.add_note_view),
     path('species', views.get_species_view),
-    path('user/<int:id>', views.delete_user_view),
+    path('user', views.delete_user_view),
 
 ]
