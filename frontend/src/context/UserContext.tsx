@@ -1,5 +1,6 @@
 import { UserContextState } from "../types/context.types";
-import React, { ReactElement, useState } from "react";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router";
 
 
 const getTokenFromStorage = (): string | null => {
@@ -22,14 +23,28 @@ export const UserContext = React.createContext<UserContextState>({
 });
 
 export const UserContextProvider: React.FC<{children: ReactElement}> = ({children}) => {
+	const [redirectState, setRedirectState] = useState<number>(0)
 	const [token, setToken] = useState<string | null>(getTokenFromStorage)
 	const [isDoctor, setIsDoctor] = useState<boolean | null>(getDoctorInfoStorage)
+
+	const navigate = useNavigate()
+
+	useEffect(() => {
+		if (redirectState >= 1) {
+			if (isDoctor) {
+				navigate("/dashboard/doc-timetable");
+			} else {
+				navigate("/dashboard/animals");
+			}
+		}
+	},[redirectState, token])
 
 	const logIn = (token: string, isDoctor: string) => {
 		localStorage.setItem("token", token);
 		localStorage.setItem("isDoctor", isDoctor);
 		setToken(token);
 		setIsDoctor(isDoctor === "True")
+		setRedirectState(1)
 	}
 
 	const logOut = () => {

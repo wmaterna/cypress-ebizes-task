@@ -26,18 +26,19 @@ moment.locale("pl")
 const App: React.FC = () => {
     const {token} = useContext(UserContext);
     return (
-        <AppContextProvider>
 
-            <Router>
-                <Navbar />
-                <Sidebar token={token}/>
+        <Router>
+            <AppContextProvider>
+                <>
+                    <Navbar />
+                    <Sidebar token={token}/>
                     <Routes>
                         <Route path="/">
                             <Route path="/signUp" element={<SignUp/>}/>
                             <Route path="/signIn" element={<SignIn/>}/>
 
                             {token && (
-                                <Route path="/dashboard">
+                                <>
                                     <Route path="/dashboard/animals" element={<Animals/>}/>
                                     <Route path="/dashboard/scheduleVisit" element={<ScheduleVisit/>}/>
                                     <Route path="/dashboard/doc-addVisits" element={<PlanVisits/>} />
@@ -45,15 +46,16 @@ const App: React.FC = () => {
                                     <Route path="/dashboard/visitsPlan" element={<VisitsPlanUser />}/>
                                     <Route path="/dashboard/user-setup" element={<UserSetupScreen />} />
                                     <Route path="/dashboard/doc-history" element={<DocVisitsHistory />} />
-                                </Route>
+                                </>
                             )}
 
                             <Route index element={<HelloComponent/>}/>
                         </Route>
                         {/*<Route path="/" element={<HelloComponent/>}/>*/}
                     </Routes>
-            </Router>
-        </AppContextProvider>
+                </>
+            </AppContextProvider>
+        </Router>
     );
 }
 

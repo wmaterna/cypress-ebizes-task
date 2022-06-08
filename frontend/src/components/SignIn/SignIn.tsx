@@ -66,11 +66,11 @@ export default function SignIn() {
 
                         logIn(res.data.success.toString(), res.data.isDoctor.toString())
 
-                        if (res.data.isDoctor.toString() === 'True') {
-                            navigate("/dashboard/doc-timetable");
-                        } else {
-                            navigate("/dashboard/animals");
-                        }
+                        // if (res.data.isDoctor.toString() === 'True') {
+                        //     navigate("/dashboard/doc-timetable");
+                        // } else {
+                        //     navigate("/dashboard/animals");
+                        // }
 
                     } else {
                         // setToken(res.data.success);
@@ -146,11 +146,6 @@ export default function SignIn() {
                     </Button>
 
                     <Grid container>
-                        <Grid item xs>
-                            <Link href="#" variant="body2">
-                                Zapomniałeś hasła?
-                            </Link>
-                        </Grid>
                         <Grid item>
                             <Link href="/signUp" variant="body2">
                                 {"Nie masz jeszcze konta? Załóż konto"}
