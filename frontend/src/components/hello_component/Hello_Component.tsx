@@ -5,12 +5,17 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import PinDropIcon from '@mui/icons-material/PinDrop';
 import FacebookIcon from '@mui/icons-material/Facebook';
 import GoogleIcon from '@mui/icons-material/Google';
+import { useRef } from "react";
 
 interface props {
 
 }
 
 const HelloComponent: React.FC<props> = () => {
+    const aboutUs = useRef<HTMLDivElement>(document.createElement("div"));
+
+    const executeScroll = () => aboutUs.current.scrollIntoView({ behavior: 'smooth' });
+
     return (
         <div className="landing-page">
             <div className="landing-page-header">
@@ -24,11 +29,11 @@ const HelloComponent: React.FC<props> = () => {
                     <p>
                         Umawiaj wizyty, przeglądaj historię leczenia, ciesz się profesjonalną opieką.
                     </p>
-                    <Button className="home-btn" variant="contained">Dowiedz się więcej</Button>
+                    <Button className="home-btn" variant="contained" onClick={executeScroll}>Dowiedz się więcej</Button>
                 </div>
                 <img src={"4198540.jpg"} alt={"Sweet dog and vet"}/>
             </div>
-            <div className="landing-page-about-us">
+            <div className="landing-page-about-us" ref={aboutUs}>
                 <h3>Poznaj nasz zespół</h3>
                 <h4>Ponieważ nasza praca jest też naszą pasją</h4>
                 <div className="landing-page-about-us__vets">
