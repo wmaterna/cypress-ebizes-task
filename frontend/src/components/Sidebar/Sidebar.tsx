@@ -40,7 +40,7 @@ const Sidebar: React.FC<Sidebarprops> = ({token}) => {
                 sx: {
                     backgroundColor: theme.palette.primary.light,
                     paddingTop: 10,
-                    width: "25%"
+                    width: "230px"
                 }
             }}
         >

@@ -78,7 +78,7 @@ const MyAnimalsList: React.FC<props> = ({userAnimals, getAnimalsList}) => {
                     <Card key={id} className="animals-list">
                         <CardHeader
                             avatar={
-                                <Avatar sx={{bgcolor: '#80cbc4'}} aria-label="avatar">
+                                <Avatar sx={{bgcolor: '#2666ab'}} aria-label="avatar">
                                     <PetsIcon/>
                                 </Avatar>
                             }
