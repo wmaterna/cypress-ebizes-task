@@ -65,10 +65,9 @@ export default function Navbar() {
     const theme = useTheme();
     const {logOut, token} = useContext(UserContext)
     const navigate = useNavigate();
-    const {pathname} = useLocation()
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
-    const [isDoctor, setIsDoctor] = useState(localStorage.getItem("isDoctor") === 'True');
+    const {isDoctor} = useContext(UserContext)
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
