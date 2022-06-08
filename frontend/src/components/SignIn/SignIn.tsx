@@ -66,11 +66,11 @@ export default function SignIn() {
 
                         logIn(res.data.success.toString(), res.data.isDoctor.toString())
 
-                        if (res.data.isDoctor.toString() === 'True') {
-                            navigate("/dashboard/doc-timetable");
-                        } else {
-                            navigate("/dashboard/animals");
-                        }
+                        // if (res.data.isDoctor.toString() === 'True') {
+                        //     navigate("/dashboard/doc-timetable");
+                        // } else {
+                        //     navigate("/dashboard/animals");
+                        // }
 
                     } else {
                         // setToken(res.data.success);
@@ -101,7 +101,7 @@ export default function SignIn() {
                     alignItems: 'center',
                 }}
             >
-                <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+                <Avatar sx={{m: 1, bgcolor: 'primary.main'}}>
                     <LockOutlinedIcon/>
                 </Avatar>
                 <Typography component="h1" variant="h5">

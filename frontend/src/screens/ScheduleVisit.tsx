@@ -174,6 +174,7 @@ const ScheduleVisit: React.FC = () => {
                 <Grid item>
                     <IconButton
                         size="large"
+                        disabled={moment(selectedDate).subtract(1, "week").endOf("week").isBefore(moment())}
                         onClick={() => handlePlusMinusDate("minus")}
                     >
                         <ArrowBackIcon/>

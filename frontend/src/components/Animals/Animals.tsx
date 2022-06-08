@@ -39,7 +39,7 @@ const Animals: React.FC<props> = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     const [name, setName] = useState('');
-    const [weight, setWeight] = useState(10);
+    const [weight, setWeight] = useState<number>(10);
     const [height, setHeight] = useState(10);
     const [race, setRace] = useState('');
     const [dateOfBirth, setDateOfBirth] = useState(new Date('2022-01-01T21:11:54'));
@@ -72,6 +72,7 @@ const Animals: React.FC<props> = () => {
 
     const handleClose = () => {
         setOpen(false);
+        clearForm();
     };
 
     const isValidForm = (): boolean => {
@@ -117,6 +118,17 @@ const Animals: React.FC<props> = () => {
         animalsApi.getUserPets().then((res: UserPet[]) => setUserAnimals(res));
     }
 
+    const clearForm = () => {
+        setName("");
+        setWeight(10);
+        setHeight(10);
+        setRace("");
+        setSpecies('2');
+        setAdditionalSpecies("");
+        setName("");
+        setDateOfBirth(new Date('2022-01-01T21:11:54'));
+    }
+
     useEffect(() => {
         getAnimalsList()
     }, [])
@@ -140,7 +152,8 @@ const Animals: React.FC<props> = () => {
             }).then(() => {
                 getAnimalsList()
                 setOpen(false);
-                setServerError("")
+                clearForm();
+                setServerError("");
                 setIsButtonDisabled(false);
                 setIsLoading(false);
             }, () => {
@@ -265,8 +278,8 @@ const Animals: React.FC<props> = () => {
                                             startAdornment: <InputAdornment position="start">kg</InputAdornment>,
                                             inputProps: {min: 0}
                                         }}
-                                        value={weight}
-                                        onChange={(e: any) => setWeight(Number(e.target.value))}
+                                        value={weight === 0 ? "" : weight}
+                                        onChange={(e) => setWeight(Number(e.target.value))}
                                         error={isWeightError}
                                         helperText={weightError}
                                     />
@@ -291,7 +304,7 @@ const Animals: React.FC<props> = () => {
                                             startAdornment: <InputAdornment position="start">cm</InputAdornment>,
                                             inputProps: {min: 0}
                                         }}
-                                        value={height}
+                                        value={height === 0 ? "" : height}
                                         onChange={(e: any) => setHeight(Number(e.target.value))}
                                         error={isHeightError}
                                         helperText={heightError}

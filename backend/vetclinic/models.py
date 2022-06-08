@@ -110,6 +110,10 @@ def email_post_delete(sender, instance, *args, **kwargs):
 
         receiver = list([instance.doctor.email])
         fail_silently = False
-        return send_mail(subject, message, sender, receiver, fail_silently)
+        try:
+            send_mail(subject, message, sender, receiver, fail_silently)
+        except Exception:
+            print("There is no e-mail like that")
+
 
 

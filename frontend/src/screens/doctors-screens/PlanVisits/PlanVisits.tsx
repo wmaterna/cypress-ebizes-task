@@ -32,6 +32,7 @@ const PlanVisits: React.FC = () => {
     const [appointmentTime, setAppointmentTime] = useState<string>('15');
     const [breakTime, setBreakTime] = useState<string>('5');
     const [days, setDays] = useState<string[]>([]);
+    const [addDisabled, setAddDisabled] = useState(false);
 
     const {enqueueSnackbar} = useSnackbar()
 
@@ -51,12 +52,21 @@ const PlanVisits: React.FC = () => {
         }
     },[selectHourForm])
 
+    useEffect(() => {
+        if(errorHourFrom || errorHourTo || days.length === 0){
+            setAddDisabled(true)
+        } else {
+            setAddDisabled(false)
+        }
+    },[errorHourFrom, errorHourTo, days])
+
     const handleDays = (event: React.MouseEvent<HTMLElement>, newFormats: string[]) => {
             setDays(newFormats);
     };
 
 
     const handleClick = () => {
+        setAddDisabled(true)
         let visit: DoctorsVisit = {
             dateFrom: selectedDateFrom.format("YYYY-MM-DD"),
             dateTo: selectDateTo.format("YYYY-MM-DD"),
@@ -194,7 +204,7 @@ const PlanVisits: React.FC = () => {
             <Grid container sx={{marginTop: 5}} gap={5}>
                <Button
                   variant="contained"
-                  disabled={errorHourFrom || errorHourTo || days.length === 0}
+                  disabled={addDisabled}
                   size="large"
                   onClick={handleClick}
                >

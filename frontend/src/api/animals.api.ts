@@ -3,29 +3,6 @@ import {AddNewPet, PetVisits, Species, UserPet} from "../types/animals.types";
 import {Visit} from "../types";
 import moment from "moment";
 
-const userVisits: PetVisits[] = [
-    {
-        id: 1,
-        date: '02-12-2019',
-        doctorId: 0,
-        animal: {
-            id: 1,
-            name: 'Burek'
-        },
-        note: 'Burek jest zdrowy, gitówa',
-    },
-    {
-        id: 2,
-        date: '02-12-2019',
-        doctorId: 0,
-        animal: {
-            id: 2,
-            name: 'Inny Burek'
-        },
-        note: 'Inny burek też jest zdrowy, gitówa',
-    }
-]
-
 
 const getAllSpecies = (): Promise<Species[]> => {
     return axios.get("/species").then(res => res.data)
@@ -54,10 +31,15 @@ const getVisits = (): Promise<Visit[]> => {
     // return Promise.resolve(userVisits);
 }
 
+const deleteUser = (): Promise<number> => {
+     return axios.delete(`/user`);
+}
+
 export const animalsApi = {
     addNewPet,
     getAllSpecies,
     getUserPets,
     getVisits,
-    deletePet
+    deletePet,
+    deleteUser
 }
