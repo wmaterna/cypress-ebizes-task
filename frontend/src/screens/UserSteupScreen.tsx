@@ -9,6 +9,8 @@ import Box from "@mui/material/Box";
 import {animalsApi} from "../api/animals.api";
 import {useNavigate} from "react-router";
 import {UserContext} from "../context/UserContext";
+import { userApi } from "../api/UserApi";
+import { useSnackbar } from "notistack";
 
 
  const UserSetupScreen: React.FC = () => {
@@ -21,6 +23,8 @@ import {UserContext} from "../context/UserContext";
     const [isLoading, setIsLoading] = useState(false);
     const [serverError, setServerError] = useState("");
     const {logOut} = useContext(UserContext);
+
+    const {enqueueSnackbar} = useSnackbar();
 
     const handleAgree = () => {
         setDeleteDialogOpen(false)
@@ -44,6 +48,21 @@ import {UserContext} from "../context/UserContext";
             setFormValid(false);
         }
     }, [currentPassword, newPassword])
+
+
+     const handleChangePassword = () => {
+            userApi.changePassword(newPassword)
+                .then(
+                    () => {
+                        enqueueSnackbar("Zmieniono hasło!", { variant: "success" })
+                        setCurrentPassword("")
+                        setNewPassword("")
+                    },
+                    () => enqueueSnackbar("Wystąpił błąd",{variant: "error"})
+                )
+     }
+
+
     return (
         <div style={{width: "68%", marginLeft: "25%", padding: "5%"}}>
             <Grid container style={{ marginBottom: "2%"}}>
@@ -78,11 +97,12 @@ import {UserContext} from "../context/UserContext";
                         autoComplete="current-password"
                     />
                     <Button
-                        type="submit"
+                        type="button"
                         fullWidth
                         disabled={!formValid}
                         variant="contained"
                         sx={{mt: 3, mb: 2}}
+                        onClick={handleChangePassword}
                     >
                         Change password
                     </Button>
