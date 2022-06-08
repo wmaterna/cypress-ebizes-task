@@ -29,6 +29,8 @@ def register_view(request):
             lastName = data.get('lastName', "Anonim")
             email = data['email']
             password = data['password']
+            if CustomUser.objects.filter(email=email).exists():
+                return JsonResponse({'success': False, 'error': 'Email exists'}, status=409)
         except JSONDecodeError:
             return JsonResponse({'success': False, 'error': 'Invalid body'}, status=400)
         except KeyError:
@@ -472,10 +474,12 @@ def get_species_view(request):
 
 
 @csrf_exempt
-def delete_user_view(request: HttpRequest, id: int):
-    if request.method == "GET":
+def delete_user_view(request: HttpRequest):
+    if request.user is None:
+        return JsonResponse({"message: User not found"}, safe=False, status=400)
+    if request.method == "DELETE":
         try:
-            user = CustomUser.objects.get(id=id)
+            user = CustomUser.objects.get(id=request.user.id)
             if not user.is_active:
                 return JsonResponse({"message": "User is not active"}, safe=False, status=400)
             else:

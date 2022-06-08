@@ -2,10 +2,11 @@ import React, {useEffect, useState} from "react";
 import VisitHistoryCard from "./VisitHistoryCard";
 import {Typography} from "@mui/material";
 import {Grid} from "@mui/material"
-import DatePicker from "react-datepicker";
+import { DatePicker } from "@mui/x-date-pickers";
 import {visitsApi} from "../../../api/visits.api";
 import {Visit} from "../../../types";
 import moment, {Moment} from "moment";
+import TextField from "@mui/material/TextField";
 
 
 const DocVisitsHistory: React.FC = () => {
@@ -38,11 +39,21 @@ const DocVisitsHistory: React.FC = () => {
                         Historia wizyt
                     </Typography>
                 </Grid>
-                <Grid item xs={2}>
+                {/*<Grid item xs={2}>*/}
+                {/*    <DatePicker*/}
+                {/*        wrapperClassName="datePicker"*/}
+                {/*        selected={date}*/}
+                {/*        onChange={(e: Date) => setDate(e)}/>*/}
+                {/*</Grid>*/}
+                <Grid item sm={4}>
                     <DatePicker
-                        wrapperClassName="datePicker"
-                        selected={date}
-                        onChange={(e: Date) => setDate(e)}/>
+                        label="Data wizyty"
+                        value={date}
+                        onChange={e => {
+                            if (e !== null) { setDate(e) }
+                        }}
+                        renderInput={(props) => <TextField fullWidth {...props} />}
+                    />
                 </Grid>
             </Grid>
             {wrongDate ?
