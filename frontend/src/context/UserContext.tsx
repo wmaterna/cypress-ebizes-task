@@ -30,6 +30,7 @@ export const UserContextProvider: React.FC<{children: ReactElement}> = ({childre
 	const navigate = useNavigate()
 
 	useEffect(() => {
+		console.log("FUPA")
 		if (redirectState >= 1) {
 			if (isDoctor) {
 				navigate("/dashboard/doc-timetable");
@@ -37,14 +38,14 @@ export const UserContextProvider: React.FC<{children: ReactElement}> = ({childre
 				navigate("/dashboard/animals");
 			}
 		}
-	},[redirectState, token])
+	},[redirectState, token, isDoctor])
 
 	const logIn = (token: string, isDoctor: string) => {
 		localStorage.setItem("token", token);
 		localStorage.setItem("isDoctor", isDoctor);
 		setToken(token);
 		setIsDoctor(isDoctor === "True")
-		setRedirectState(1)
+		setRedirectState(2)
 	}
 
 	const logOut = () => {

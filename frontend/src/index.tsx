@@ -4,13 +4,19 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import axios from "axios";
+import AppContextProvider from "./context";
+import {BrowserRouter as Router} from "react-router-dom";
 
 axios.defaults.xsrfHeaderName = "X-CSRFTOKEN";
 axios.defaults.xsrfCookieName = "csrftoken";
 
 ReactDOM.render(
     <React.StrictMode>
-        <App/>
+        <Router >
+            <AppContextProvider>
+                <App/>
+            </AppContextProvider>
+        </Router>
     </React.StrictMode>,
     document.getElementById('root')
 );
