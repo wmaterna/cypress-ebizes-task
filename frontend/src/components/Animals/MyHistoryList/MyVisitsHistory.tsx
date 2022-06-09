@@ -56,7 +56,7 @@ const MyVisitsHistory: React.FC<props> = ({animalsHistory}) => {
                                         <Dialog open={noteOpen} onClose={handleClose}>
                                             <DialogTitle>Notatka pozostawiona przez lekarza po spotkaniu</DialogTitle>
                                             <DialogContent>
-                                                {animalNote}
+                                                {animalNote==="" ? <span>Nie ma notatki zostawionej przez lekrza</span> : <span>{animalNote}</span>}
                                             </DialogContent>
                                         </Dialog>
                                     </Grid>
