@@ -17,12 +17,17 @@ interface props {
 const MyVisitsHistory: React.FC<props> = ({animalsHistory}) => {
 
     const [noteOpen, setNoteOpen] = useState<boolean>(false)
-    const [currentIndex, setCurrentIndex] = useState<number>(0);
+    const [animalNote, setAnimalNote] = useState<string>("");
 
-    const handleOpenNote = (index: number) => {
+    const handleOpenNote = (note: string) => {
          setNoteOpen(true);
-         setCurrentIndex(index)
+         setAnimalNote(note)
     }
+
+    const handleClose = () => {
+        setNoteOpen(false);
+        setAnimalNote("")
+    };
 
     return (
         <div className="user-animals">
@@ -46,12 +51,12 @@ const MyVisitsHistory: React.FC<props> = ({animalsHistory}) => {
                                     </Grid>
                                     <Grid item xs={2}>
                                         <CardActions>
-                                            <Button onClick={() => handleOpenNote(index)} size="small">Notatka</Button>
+                                            <Button onClick={() => handleOpenNote(visit.note)} size="small">Notatka</Button>
                                         </CardActions>
-                                        <Dialog open={noteOpen} onClose={() => setNoteOpen(false)}>
+                                        <Dialog open={noteOpen} onClose={handleClose}>
                                             <DialogTitle>Notatka pozostawiona przez lekarza po spotkaniu</DialogTitle>
                                             <DialogContent>
-                                                {animalsHistory[currentIndex].note}
+                                                {animalNote==="" ? <span>Nie ma notatki zostawionej przez lekrza</span> : <span>{animalNote}</span>}
                                             </DialogContent>
                                         </Dialog>
                                     </Grid>
