@@ -365,6 +365,14 @@ def delete_animal_view(request: HttpRequest, id: int):
             animal = Animal.objects.get(id=id)
             animal.is_deleted = True
             animal.save()
+
+            visits = Visit.objects.filter(animal_id=id)
+
+            for visit in visits:
+                visit.animal = None
+                visit.note = None
+                visit.save()
+
             return JsonResponse(animal.id, safe=False, status=200)
         except:
             return JsonResponse({"message": "delete error"}, safe=False, status=400)
@@ -460,7 +468,7 @@ def get_treatment_history(request: HttpRequest,) -> JsonResponse:
 
 
         if not visists:
-            return JsonResponse({'message': 'no visits found'}, status=404)
+            return JsonResponse([], safe=False)
         return JsonResponse(visists, safe=False)
 
 

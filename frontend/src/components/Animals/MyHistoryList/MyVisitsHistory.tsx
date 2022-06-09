@@ -11,18 +11,13 @@ import {Dialog, DialogTitle, Grid, DialogContent} from "@mui/material";
 import Button from '@mui/material/Button';
 
 interface props {
-
+    animalsHistory: Visit[];
 }
 
-const MyVisitsHistory: React.FC<props> = () => {
+const MyVisitsHistory: React.FC<props> = ({animalsHistory}) => {
 
-    const [userVisitsHistory, setUserVisitsHisory] = useState<Visit[]>([]);
     const [noteOpen, setNoteOpen] = useState<boolean>(false)
     const [currentIndex, setCurrentIndex] = useState<number>(0);
-
-    useEffect(() => {
-        animalsApi.getVisitsHistory().then((res: Visit[]) => setUserVisitsHisory(res));
-    }, [])
 
     const handleOpenNote = (index: number) => {
          setNoteOpen(true);
@@ -31,9 +26,9 @@ const MyVisitsHistory: React.FC<props> = () => {
 
     return (
         <div className="user-animals">
-            {userVisitsHistory.length ? (
+            {animalsHistory.length ? (
                 <>
-                    {userVisitsHistory.map((visit: Visit, index: number) => (
+                    {animalsHistory.map((visit: Visit, index: number) => (
                         <Card key={index} className="animals-list">
                             <CardContent>
                                 <Grid container
@@ -56,7 +51,7 @@ const MyVisitsHistory: React.FC<props> = () => {
                                         <Dialog open={noteOpen} onClose={() => setNoteOpen(false)}>
                                             <DialogTitle>Notatka pozostawiona przez lekarza po spotkaniu</DialogTitle>
                                             <DialogContent>
-                                                {userVisitsHistory[currentIndex].note}
+                                                {animalsHistory[currentIndex].note}
                                             </DialogContent>
                                         </Dialog>
                                     </Grid>
