@@ -1,5 +1,7 @@
-How to run application?
+Jak uruchomić aplikacje?
 
-- In ./clinic-vet/backend/ run `pip install -r requirements.txt` and `./manage.py runserver`
+- Przed uruchomieniem należy mieć zainstalowane: `Python3`, `pip`, `node LTS version`
 
-- In ./clinic-vet/frontend/ run `npm install` and `npm start`
+- W ./clinic-vet/backend/ uruchom `pip install -r requirements.txt` następnie `./manage.py runserver`
+
+- W ./clinic-vet/frontend/ uruchom `npm install` następnie `npm start`
