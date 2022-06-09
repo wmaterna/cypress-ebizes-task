@@ -527,13 +527,16 @@ def change_password_view(request: HttpRequest) -> JsonResponse:
         return JsonResponse({}, status=401)
 
     if request.method == "PUT":
+        currentPassword = json.loads(request.body)["currentPassword"]
         password = json.loads(request.body)["password"]
-
         user = request.user
-        user.set_password(password)
-        user.save()
 
+        if user.check_password(currentPassword):
+            user.set_password(password)
+            user.save()
+            return JsonResponse({"message": "Password changed!"}, status=200)
+        else:
+            return JsonResponse({"message": "Current Password wrong!"}, status=401)
 
-        return JsonResponse({"message": "Password changed!"}, status=200)
 
 
