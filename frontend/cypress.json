@@ -1,0 +1,6 @@
+{
+  "baseUrl": "http://localhost:3000",
+  "env": {
+    "TEST_TOKEN" : "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9%2EeyJhdWQiOiJodHRwOi8vMC4wLjAuMDozXFxcXD04MDgwL2hlbGxvMiIsImlzcyI6Imh0dHA6Ly8wLjAuMC4wOjNcXFxcPTgwODAiLCJpZCI6IjExMTY3OTkzMTM5ODcxMjg5MjAyMiIsImV4cCI6MTY1NzAwOTUyNH0%2E2dANiEqwNt5Eqf7JuXe3gT1MypupJM5CrsShSztKW48"
+  }
+}

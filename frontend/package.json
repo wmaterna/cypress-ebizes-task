@@ -37,7 +37,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "cypress open",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -59,6 +59,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react-time-picker": "^4.0.2"
+    "@types/react-time-picker": "^4.0.2",
+    "cypress": "^9.6.1"
   }
 }
